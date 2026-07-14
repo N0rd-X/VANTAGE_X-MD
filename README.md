@@ -2,7 +2,7 @@
 
 # 🔒 VANTAGE-X MD 🔒
 
-<img src="https://raw.githubusercontent.com/N0rd-X/Vantage_X-MD/main/thumb.png" alt="VANTAGE-X MD" width="300"/>
+<img src="https://raw.githubusercontent.com/N0rd-X/VANTAGE_X-MD/refs/heads/main/VantageXMedia/thumb.png" alt="VANTAGE-X MD" width="300"/>
 
 **Fast. Smart. Yours.**
 
@@ -118,9 +118,6 @@ Set `SESSION_ID` and `OWNER_NUMBER` in your `.env`, then `npm start`. Full instr
   </tr>
   <tr>
     <td><a href="https://t.me/N0rd_X" target="_blank"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white"/></a></td>
-  </tr>
-  <tr>
-    <td><a href="https://discord.gg/PLACEHOLDER" target="_blank"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"/></a></td>
   </tr>
 </table>
 
@@ -365,10 +362,9 @@ All declared in `package.json`. Key ones:
 
 If you find a security vulnerability, **do not open a public issue**.
 
-Contact us privately:
+Contact me privately:
 - **Email:** nord_x@tuta.io
 - **Telegram:** [@N0rdx](https://t.me/N0rd_X)
-- **Discord:** [discord](https://discord.gg/PLACEHOLDER)
 
 We'll respond within **72 hours**.
 
@@ -436,7 +432,7 @@ MIT License — free to use, modify, and distribute. See [LICENSE](LICENSE).
 
 Made with ❤️ by [Nord-X](https://github.com/N0rd-X)
 
-⭐ Star this repo if it helped you!
+⭐ Star this repo if you like the bot!
 
 [Pair Device](https://vantagex-pairing.onrender.com/) • [Support](https://chat.whatsapp.com/PLACEHOLDER) • [Telegram](https://t.me/N0rd_X)
 
