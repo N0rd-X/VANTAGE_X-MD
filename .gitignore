@@ -1,0 +1,129 @@
+# ========================
+# VANTAGE-X MD .gitignore
+# Prevents sensitive data leaks
+# ========================
+
+# ==================
+# CRITICAL SECURITY
+# ==================
+# Session files
+session/
+*.session
+*.session.json
+*.data.json
+auth_info*/
+creds.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Database files
+database/*.json
+*.db
+*.sqlite
+
+# ==================
+# NODE / NPM
+# ==================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ==================
+# LOGS & TEMP FILES
+# ==================
+logs/
+*.log
+*.tmp
+*.temp
+.cache/
+.npm/
+.eslintcache
+
+# ==================
+# OS SPECIFIC
+# ==================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ==================
+# IDE / EDITORS
+# ==================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# ==================
+# BACKUP FILES
+# ==================
+*.bak
+*.backup
+*.old
+*-backup
+*-old
+
+# ==================
+# MEDIA FILES
+# ==================
+VantageXMedia/apk/*
+VantageXMedia/audio/*
+VantageXMedia/doc/*
+VantageXMedia/gif/*
+VantageXMedia/image/*
+VantageXMedia/sticker/*
+VantageXMedia/trash/*
+VantageXMedia/video/*
+VantageXMedia/zip/*
+
+# But keep the .gitkeep files
+!VantageXMedia/*/.gitkeep
+!VantageXMedia/thumb.jpg
+
+# ==================
+# BUILD & DIST
+# ==================
+dist/
+build/
+*.tgz
+
+# ==================
+# TESTING
+# ==================
+coverage/
+.nyc_output/
+test-results/
+
+# ==================
+# KEEP THESE
+# ==================
+!.env.example
+!.gitkeep
+!session/.gitkeep
+!database/.gitkeep

@@ -1,0 +1,57 @@
+{
+  "name": "Vantage_X-MD",
+  "version": "0.0.0.6",
+  "description": "VANTAGE-X MD — Fast, smart, open-source WhatsApp MD bot. Maintained by Nord-X.",
+  "main": "index.js",
+  "type": "commonjs",
+  "directories": {
+    "lib": "lib",
+    "database": "database",
+    "session": "session",
+    "media": "media"
+  },
+  "scripts": {
+    "start":  "node index.js",
+    "lowram": "LOW_POWER_MODE=true node index.js",
+    "doctor": "node -e \"console.log('Node:',process.version);console.log('Platform:',process.platform);console.log('Arch:',process.arch);console.log('RAM:',Math.round(process.memoryUsage().heapUsed/1024/1024)+'MB');console.log('Config: OK')\"",
+    "repair": "rm -rf node_modules package-lock.json && npm install"
+  },
+  "author": "Nord-X",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "baileys":                       "npm:@whiskeysockets/baileys@^6.7.9",
+    "@adiwajshing/keyed-db":         "^0.2.4",
+    "@hapi/boom":                    "latest",
+    "axios":                         "^1.13.4",
+    "chalk":                         "^4.1.2",
+    "cheerio":                       "^1.0.0-rc.12",
+    "dotenv":                        "^17.2.3",
+    "express":                       "^5.1.0",
+    "file-type":                     "^16.5.3",
+    "fluent-ffmpeg":                 "^2.1.2",
+    "form-data":                     "^4.0.0",
+    "fs-extra":                      "^11.1.1",
+    "google-tts-api":                "^2.0.2",
+    "human-readable":                "^0.2.1",
+    "jimp":                          "^0.16.3",
+    "jsdom":                         "^22.1.0",
+    "mathjs":                        "^11.11.0",
+    "moment-timezone":               "^0.5.43",
+    "node-cache":                    "^5.1.2",
+    "node-fetch":                    "^2.6.11",
+    "node-id3":                      "^0.2.3",
+    "node-webpmux":                  "^3.1.7",
+    "pino":                          "^10.1.0",
+    "qrcode":                        "^1.5.3",
+    "qrcode-reader":                 "^1.0.4",
+    "qrcode-terminal":               "^0.12.0"
+  },
+  "systemDependencies": {
+    "note": "These must be installed on the host — not via npm.",
+    "ffmpeg": "pkg install ffmpeg -y  |  sudo apt install ffmpeg -y",
+    "yt-dlp": "pkg install yt-dlp -y  |  pip install yt-dlp  |  sudo apt install yt-dlp"
+  }
+}

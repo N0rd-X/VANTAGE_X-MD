@@ -1,0 +1,105 @@
+{
+  "name": "VANTAGE-X MD",
+  "description": "VANTAGE-X MD \u2014 Advanced WhatsApp bot made for speed and useability. Maintained by Nord-X.",
+  "logo": "https://i.imgur.com/PLACEHOLDER.jpg",
+  "keywords": [
+    "bot",
+    "whatsapp",
+    "baileys",
+    "javascript",
+    "N0rd-x"
+  ],
+  "success_url": "/",
+  "stack": "heroku-24",
+  "env": {
+    "SESSION_ID": {
+      "description": "Put your SESSION_ID here.",
+      "value": ""
+    },
+    "PREFIX": {
+      "description": "Bot command prefix (example: ., !, #)",
+      "value": "!"
+    },
+    "OWNER_NUMBER": {
+      "description": "Owner's phone number in international format (without +).",
+      "value": "27686881403"
+    },
+    "OWNER_NAME": {
+      "description": "Owner's display name.",
+      "value": "Nord-X"
+    },
+    "BOT_NAME": {
+      "description": "Bot display name.",
+      "value": "VANTAGE-X MD"
+    },
+    "AUTO_RECORDING": {
+      "description": "Enable auto-recording simulation (true or false).",
+      "value": "false"
+    },
+    "AUTO_TYPING": {
+      "description": "Enable auto-typing simulation (true or false).",
+      "value": "false"
+    },
+    "AUTO_RECORD_TYPE": {
+      "description": "Enable audio recording type simulation.",
+      "value": "false"
+    },
+    "AUTO_READ": {
+      "description": "Auto read all incoming messages.",
+      "value": "false"
+    },
+    "AUTO_BIO": {
+      "description": "Enable auto bio updates with time.",
+      "value": "true"
+    },
+    "ANTI_92": {
+      "description": "Block +92 numbers automatically (true or false).",
+      "value": "false"
+    },
+    "AUTO_SW_VIEW": {
+      "description": "Auto-view WhatsApp statuses.",
+      "value": "false"
+    },
+    "WELCOME": {
+      "description": "Enable group welcome message.",
+      "value": "true"
+    },
+    "AUTO_REACT": {
+      "description": "Enable automatic reactions to messages.",
+      "value": "false"
+    },
+    "AUTO_LIKE_STATUS": {
+      "description": "Automatically react to viewed statuses.",
+      "value": "true"
+    },
+    "VANTAGEX_PP": {
+      "description": "Bot profile picture URL.",
+      "value": "https://i.imgur.com/PLACEHOLDER.jpg"
+    },
+    "LOW_POWER_MODE": {
+      "description": "Enable low-power/Android mode (true disables heavy features).",
+      "value": "false"
+    },
+    "WHATSAPP_GROUP": {
+      "description": "WhatsApp support group link.",
+      "value": "https://chat.whatsapp.com/PLACEHOLDER"
+    },
+    "WHATSAPP_CHANNEL": {
+      "description": "WhatsApp channel link.",
+      "value": "https://whatsapp.com/channel/PLACEHOLDER"
+    },
+    "TELEGRAM": {
+      "description": "Telegram support link.",
+      "value": "https://t.me/N0rd_X"
+    },
+    "DISCORD": {
+      "description": "Discord support link.",
+      "value": "https://discord.com/PLACEHOLDER"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs.git"
+    }
+  ]
+}
