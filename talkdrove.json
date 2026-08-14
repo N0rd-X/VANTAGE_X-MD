@@ -1,0 +1,25 @@
+{
+  "bot-name": "VANTAGE-X MD",
+  "description": "Fast. Smart. Yours.",
+  "logo": "https://res.cloudinary.com/fgeb24n7/image/upload/v1783969437/owner_dhgema.png",
+  "keywords": ["bot"],
+  "documentation-link": "https://N0rd-xtech.zone.id/session",
+  "owner-verification": "https://wa.me/27686881403",
+  "env": {
+    "SESSION_ID": {
+      "description": "Put your SESSION_ID here.",
+      "value": "",
+      "required": true
+    },
+    "PREFIX": {
+      "description": "Bot command prefix (example: ., !, #)",
+      "value": ".",
+      "required": true
+    },
+    "OWNER_NUMBER": {
+      "description": "Owner's phone number in international format (without +).",
+      "value": "27686881403",
+      "required": true
+    }
+  }
+}
