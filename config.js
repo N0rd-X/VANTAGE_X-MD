@@ -108,7 +108,19 @@ if (FEATURES.lowPowerMode) {
   console.log(chalk.yellow('   Memory optimisation: ACTIVE'));
 }
 
-// ── 8. HOT-RELOAD ───────────────────────────
+
+// ── 8O. PERSISTENT SETTINGS OVERRIDE ────────────────────────────────────────
+try {
+  const _sPath = require('path').join(__dirname, 'database', 'settings.json');
+  if (fs.existsSync(_sPath)) {
+    const _s = JSON.parse(fs.readFileSync(_sPath, 'utf8'));
+    if (_s.ownernumber) { BOT.owner.number = _s.ownernumber; global.ownernumber = _s.ownernumber; }
+    if (_s.ownername)   { BOT.owner.name   = _s.ownername;   global.ownername   = _s.ownername;   }
+    if (_s.prefix)      { BOT.prefix        = _s.prefix;      global.prefix       = _s.prefix;      }
+  }
+} catch { /* non-fatal — first boot has no settings.json yet */ }
+
+// ── 8R. HOT-RELOAD ───────────────────────────
 const _self = require.resolve(__filename);
 fs.watchFile(_self, () => {
   fs.unwatchFile(_self);
