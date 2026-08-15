@@ -58,13 +58,11 @@ module.exports = {
                     `┏╾━━━━━━━━━━━━━━━━╼\n` +
                     `┃ 📦【 ᴀᴘᴋ ᴅᴏᴡɴʟᴏᴀᴅ 】\n` +
                     `┣╾━━━━━━━━━━━━━━━━╼\n` +
-                    `┃\n` +
                     `┃📦 *Name:*      ${app.name}\n` +
                     `┃🏋 *Size:*      ${sizeMB} MB\n` +
                     `┃📦 *Package:*   ${pkg}\n` +
                     `┃👨‍💻 *Developer:* ${dev}\n` +
                     `┃⭐ *Rating:*   ${rating}\n` +
-                    `┃\n` +
                     `┗╾━━━━━━━━━━━━━━━━╼`
             }, { quoted: msg });
 
