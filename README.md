@@ -15,10 +15,6 @@
 
 ---
 
-VANTAGE-X MD is an open-source WhatsApp bot built on [Baileys](https://github.com/WhiskeySockets/Baileys). 190+ commands across 10 categories. Self-hostable. No hidden packages, no obfuscated code.
-
----
-
 ## Quick Start
 
 **1. Fork this repository**
@@ -125,6 +121,6 @@ MIT — free to use, modify, and distribute. See [LICENSE](LICENSE).
 
 <div align="center">
 
-Made by [Nord-X](https://github.com/N0rd-X) · [Star this repo](https://github.com/N0rd-X/Vantage_X-MD/stargazers) if it helped you
+Made by [Nord-X](https://github.com/N0rd-X) · [Star this repo](https://github.com/N0rd-X/Vantage_X-MD/stargazers) if you like the bot
 
 </div>
