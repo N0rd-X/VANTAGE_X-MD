@@ -58,7 +58,13 @@ function send(sock, jid, text, extra = {}) {
 async function ownerGuard(sock, msg) {
     const jid    = msg.key.remoteJid;
     const sender = msg.key.participant || msg.key.remoteJid;
-    if (sender !== `${config.ownernumber}@s.whatsapp.net`) {
+
+    // Normalise both sides — strip @server and :device suffixes
+    const norm = (v) => String(v || '').replace(/@.+$/, '').replace(/:\d+$/, '');
+    const ownerNum = norm(config.ownernumber || process.env.OWNER_NUMBER || '');
+    const senderNum = norm(sender);
+
+    if (!ownerNum || senderNum !== ownerNum) {
         await send(sock, jid, global.mess?.owner ?? '⛔ Owner only.');
         return true;
     }
