@@ -5,6 +5,7 @@ const { readDb } = require('../lib/db');
 const { isOwner, run: runCommand } = require('../services/commands');
 const chatbot     = require('../services/chatbot');
 const antilink    = require('../services/antilink');
+const antibadword = require('../commands/owner/antibadword');
 const auto        = require('./auto');
 const { handleOwnerProtection } = require('./ownerMentions');
 const VantageMenu = require('../menu');
@@ -65,6 +66,14 @@ function attach(sock, cmdRef) {
         if (isGroup && !fromMe) {
             const blocked = await antilink.check(sock, jid, sender, body, m.key, ownerFlag);
             if (blocked) return;
+
+            // Profanity filter — only runs on non-command messages
+            if (!isCmd && antibadword.check(jid, body)) {
+                try {
+                    await sock.sendMessage(jid, { delete: rawMsg.key });
+                } catch { /* bot may not be admin — silently skip */ }
+                return;
+            }
         }
 
         // ── 5. Chatbot ────────────────────────────────────────────────────────
@@ -105,4 +114,3 @@ function attach(sock, cmdRef) {
 }
 
 module.exports = { attach };
-
