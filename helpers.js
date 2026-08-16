@@ -45,7 +45,6 @@ function getTarget(msg, args) {
 
 // ─── Message utilities ────────────────────────────────────────────────────────
 
-/** Thin wrapper so callers don't repeat { text } every time. */
 function send(sock, jid, text, extra = {}) {
     return sock.sendMessage(jid, { text, ...extra });
 }
@@ -60,11 +59,12 @@ async function ownerGuard(sock, msg) {
     const sender = msg.key.participant || msg.key.remoteJid;
 
     // Normalise both sides — strip @server and :device suffixes
-    const norm = (v) => String(v || '').replace(/@.+$/, '').replace(/:\d+$/, '');
+    const norm = (v) => String(v || '').replace(/^\+/, '').replace(/@.+$/, '').replace(/:\d+$/, '');
     const ownerNum = norm(config.ownernumber || process.env.OWNER_NUMBER || '');
     const senderNum = norm(sender);
 
     if (!ownerNum || senderNum !== ownerNum) {
+        console.warn(`[AUTH] ownerGuard blocked — sender: ${senderNum} | owner: ${ownerNum}`);
         await send(sock, jid, global.mess?.owner ?? '⛔ Owner only.');
         return true;
     }
@@ -73,12 +73,6 @@ async function ownerGuard(sock, msg) {
 
 // ─── Database factory ─────────────────────────────────────────────────────────
 
-/**
- * Create a simple JSON-file-backed store.
- * @param {string} filename  DB file name (without .json)
- * @param {object} defaults  Returned when the file doesn't exist yet
- * @returns {{ load: () => object, save: (data: object) => void }}
- */
 function makeDB(filename, defaults = {}) {
     if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
     const fpath = path.join(DB_DIR, `${filename}.json`);
@@ -145,3 +139,4 @@ module.exports = {
     getGroupContext, getTarget, send, ownerGuard, makeDB,
     getQuotedImage, getQuotedMedia, tooLarge,
 };
+
