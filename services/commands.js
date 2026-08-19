@@ -9,25 +9,24 @@ const MAX_HEAVY = parseInt(process.env.MAX_CONCURRENT_HEAVY, 10) || 3;
 let   heavySlots = 0;
 
 const BUSY_MESSAGE =
-    '⏳ I\'m handling too many requests right now.\n\nPlease try again in a moment.';
+    'Handling too many requests right now.\n\nPlease try again in a moment.';
 
 // ── Owner check ───────────────────────────────────────────────────────────────
 
 const normalise = (v) => String(v || '').replace(/^\+/, '').replace(/@.+$/, '').replace(/:\d+$/, '');
 
-// Log the configured owner number once on startup so Render logs show it
-const _configuredOwner = normalise(config.ownernumber || process.env.OWNER_NUMBER || '');
-if (!_configuredOwner) {
-    console.warn('[AUTH] ⚠️  No owner number configured — set OWNER_NUMBER in Render environment variables');
+const _startupOwner = normalise(config.ownernumber || process.env.OWNER_NUMBER || '');
+if (!_startupOwner) {
+    console.warn('[AUTH] ⚠️  No owner number configured — set OWNER_NUMBER in .env / environment variables');
 } else {
-    console.log('[AUTH] Owner number loaded:', _configuredOwner);
+    console.log('[AUTH] Owner number loaded:', _startupOwner);
 }
 
 function isOwner(sender) {
     if (!sender) return false;
 
     const num     = normalise(sender);
-    const primary = _configuredOwner;
+    const primary = normalise(config.ownernumber || process.env.OWNER_NUMBER || '');
 
     if (primary && num === primary) return true;
 
@@ -47,12 +46,16 @@ async function run(commands, cmdName, sock, msg, args, sender) {
     const jid = msg.key.remoteJid;
 
     // ── Owner-only guard ──────────────────────────────────────────────────────
-    if (cmd.ownerOnly && !isOwner(sender)) {
-        console.warn(`[AUTH] Denied "${cmdName}" — sender: ${normalise(sender)} | owner: ${_configuredOwner}`);
-        await sock.sendMessage(jid, {
-            text: global.mess?.owner ?? '⛔ This command is restricted to the bot owner.'
-        }, { quoted: msg }).catch(() => {});
-        return;
+    if (cmd.ownerOnly) {
+        const fromMe = msg.key.fromMe;
+        if (!fromMe && !isOwner(sender)) {
+            const _ow = normalise(config.ownernumber || process.env.OWNER_NUMBER || '');
+            console.warn(`[AUTH] Denied "${cmdName}" — sender: ${normalise(sender)} | owner: ${_ow}`);
+            await sock.sendMessage(jid, {
+                text: global.mess?.owner ?? '⛔ This command is restricted to the bot owner.'
+            }, { quoted: msg }).catch(() => {});
+            return;
+        }
     }
 
     // ── Concurrency cap (heavy commands only) ─────────────────────────────────
