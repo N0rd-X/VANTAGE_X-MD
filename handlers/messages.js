@@ -65,6 +65,15 @@ function attach(sock, cmdRef) {
         if (isGroup && !fromMe) {
             const blocked = await antilink.check(sock, jid, sender, body, m.key, ownerFlag);
             if (blocked) return;
+
+            // Profanity filter
+            const _abw = cmdRef.commands.get('antibadword');
+            if (!isCmd && _abw?.check?.(jid, body)) {
+                try {
+                    await sock.sendMessage(jid, { delete: rawMsg.key });
+                } catch { /* bot may not be admin — silently skip */ }
+                return;
+            }
         }
 
         // ── 5. Chatbot ────────────────────────────────────────────────────────
@@ -105,4 +114,3 @@ function attach(sock, cmdRef) {
 }
 
 module.exports = { attach };
-
