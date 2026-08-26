@@ -2,7 +2,7 @@
 const config = require('../../config');
 const { send, ownerGuard, makeDB } = require('../../helpers');
 
-const db = makeDB('prefix', { prefix: config.prefix });
+const db = makeDB('settings', {});
 
 module.exports = {
     name: 'setprefix',
@@ -19,8 +19,15 @@ module.exports = {
             if (!args[0]) return send(sock, jid, `❌ Usage: ${this.usage}`);
 
             const newPrefix = args[0];
-            config.prefix   = newPrefix;
-            db.save({ prefix: newPrefix });
+
+            // Update in memory — takes effect immediately for this session
+            config.prefix  = newPrefix;
+            global.prefix  = newPrefix;
+
+            // Persist to settings.json so it survives restart
+            const saved    = db.load();
+            saved.prefix   = newPrefix;
+            db.save(saved);
 
             await send(sock, jid, `✅ Prefix changed to: *${newPrefix}*`);
         } catch (err) {

@@ -17,7 +17,7 @@ module.exports = {
 
             if (!num) {
                 return await sock.sendMessage(jid, {
-                    text: '⚠️ Owner number is not configured.\nAsk the bot owner to set it.'
+                    text: '⚠️ Owner number is not configured.'
                 }, { quoted: msg });
             }
 

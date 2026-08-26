@@ -13,10 +13,7 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            const sender = msg.key.participant || msg.key.remoteJid;
-            const ownerJid = `${config.ownernumber}@s.whatsapp.net`;
-            
-            if (sender !== ownerJid) return await sock.sendMessage(jid, { text: '⛔ Owner only.' });
+            if (await ownerGuard(sock, msg)) return;
             
             await sock.sendMessage(jid, { text: '🧹 Cleaning up temp files...' });
             

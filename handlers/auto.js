@@ -1,16 +1,15 @@
 'use strict';
 
-/**
- * All automatic passive features
- */
+/** All automatic passive features **/
 
-const fs = require('fs');
+const fs   = require('fs');
+const path = require('path');
 
 // ── Auto-react emoji pool ────────────────────────────────────────────────────
 
 let autoreactData = [];
 try {
-    autoreactData = JSON.parse(fs.readFileSync('./lib/autoreact.json', 'utf8'));
+    autoreactData = JSON.parse(fs.readFileSync(path.join(__dirname, '../lib/autoreact.json'), 'utf8'));
 } catch (err) {
     console.error('[AUTO] Could not load autoreact.json:', err.message);
 }
@@ -78,15 +77,6 @@ function attachStatusView(sock) {
 
 // ── Per-message auto features ────────────────────────────────────────────────
 
-/**
- * Run all per-message auto features.
- *
- * @param {object}  sock    - Baileys socket
- * @param {string}  jid     - chat JID
- * @param {object}  msgKey  - message key
- * @param {boolean} isCmd   - whether message starts with prefix
- * @param {boolean} fromMe  - whether bot sent this message
- */
 async function runMessageAutos(sock, jid, msgKey, isCmd, fromMe) {
     // Auto-read
     if (global.autoread && !fromMe) {

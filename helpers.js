@@ -3,14 +3,23 @@
 const fs     = require('fs');
 const path   = require('path');
 const config = require('./config');
+const { jidDecode, jidNormalizedUser } = require('@whiskeysockets/baileys');
 
 const DB_DIR = path.join(__dirname, 'database');
 
+// ─── JID utilities ────────────────────────────────────────────────────────────
+
+function _decodeJid(jid) {
+    if (!jid) return jid;
+    if (/:\d+@/gi.test(jid)) {
+        const decoded = jidDecode(jid) || {};
+        return decoded.user && decoded.server ? `${decoded.user}@${decoded.server}` : jid;
+    }
+    return jidNormalizedUser(jid);
+}
+
 // ─── Group utilities ──────────────────────────────────────────────────────────
 
-/**
- * Fetch group metadata and derive a permission context object.
- */
 async function getGroupContext(sock, msg) {
     const jid = msg.key.remoteJid;
     if (!jid.endsWith('@g.us')) return null;
@@ -31,9 +40,6 @@ async function getGroupContext(sock, msg) {
     };
 }
 
-/**
- * Resolve a target JID in priority order
- */
 function getTarget(msg, args) {
     const ctx = msg.message?.extendedTextMessage?.contextInfo;
     if (ctx?.mentionedJid?.[0]) return ctx.mentionedJid[0];
@@ -45,40 +51,32 @@ function getTarget(msg, args) {
 
 // ─── Message utilities ────────────────────────────────────────────────────────
 
-/** Thin wrapper so callers don't repeat { text } every time. */
 function send(sock, jid, text, extra = {}) {
     return sock.sendMessage(jid, { text, ...extra });
 }
 
 // ─── Owner utilities ──────────────────────────────────────────────────────────
 
-/**
- * Check if the sender is the bot owner
- */
 async function ownerGuard(sock, msg) {
     const jid    = msg.key.remoteJid;
-    const sender = msg.key.participant || msg.key.remoteJid;
+    const fromMe = msg.key.fromMe;
 
-    // Normalise both sides — strip @server and :device suffixes
-    const norm = (v) => String(v || '').replace(/@.+$/, '').replace(/:\d+$/, '');
-    const ownerNum = norm(config.ownernumber || process.env.OWNER_NUMBER || '');
-    const senderNum = norm(sender);
+    // fromMe = the bot's own device is unconditionally trusted
+    if (fromMe) return false;
 
-    if (!ownerNum || senderNum !== ownerNum) {
+    const sender = _decodeJid(msg.key.participant || msg.key.remoteJid);
+
+    const { isOwner } = require('./services/commands');
+    if (!isOwner(sender)) {
+        console.warn(`[AUTH] ownerGuard blocked — sender: ${sender}`);
         await send(sock, jid, global.mess?.owner ?? '⛔ Owner only.');
-        return true;
+        return true;   // blocked
     }
-    return false;
+    return false;      // allowed
 }
 
 // ─── Database factory ─────────────────────────────────────────────────────────
 
-/**
- * Create a simple JSON-file-backed store.
- * @param {string} filename  DB file name (without .json)
- * @param {object} defaults  Returned when the file doesn't exist yet
- * @returns {{ load: () => object, save: (data: object) => void }}
- */
 function makeDB(filename, defaults = {}) {
     if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
     const fpath = path.join(DB_DIR, `${filename}.json`);
@@ -93,9 +91,6 @@ function makeDB(filename, defaults = {}) {
 
 // ─── Media utilities ─────────────────────────────────────────────────────────
 
-/**
- * Extract the quoted/replied-to image from a message.
- */
 function getQuotedImage(msg) {
     const ctx = msg.message?.extendedTextMessage?.contextInfo;
     if (!ctx?.quotedMessage?.imageMessage) return null;
@@ -112,9 +107,6 @@ function getQuotedImage(msg) {
     };
 }
 
-/**
- * Extract any quoted/replied-to media from a messages
- */
 function getQuotedMedia(msg) {
     const ctx = msg.message?.extendedTextMessage?.contextInfo;
     if (!ctx?.quotedMessage) return null;
@@ -136,7 +128,6 @@ function getQuotedMedia(msg) {
     };
 }
 
-/** True if a downloaded buffer exceeds maxMB (default 50MB). */
 function tooLarge(buffer, maxMB = 50) {
     return buffer.length > maxMB * 1024 * 1024;
 }
