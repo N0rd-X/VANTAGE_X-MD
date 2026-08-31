@@ -30,13 +30,11 @@ module.exports = {
                 `┏╾━━━━━━━━━━━━━━━━╼\n` +
                 `┃ ⏱️【 ʀᴜɴᴛɪᴍᴇ 】\n` +
                 `┣╾━━━━━━━━━━━━━━━━╼\n` +
-                `┃\n` +
                 `┃ 🕐 *Uptime:*  ${d}d ${h}h ${m}m ${s}s\n` +
                 `┃ 💾 *Memory:* ${memMB} MB\n` +
                 `┃ 📟 *Load:*   ${loadAvg}\n` +
                 `┃ ⚙️ *Node:*   ${process.version}\n` +
                 `┃ 🏷️ *Build:*  v${config.version || '0.0.0.7'}\n` +
-                `┃\n` +
                 `┗╾━━━━━━━━━━━━━━━━╼`;
 
             await sock.sendMessage(jid, { text }, { quoted: msg });

@@ -28,14 +28,12 @@ module.exports = {
                 `┏╾━━━━━━━━━━━━━━━━╼\n` +
                 `┃ ⚡【 ᴠᴀɴᴛᴀɢᴇ-x ɪs ᴀʟɪᴠᴇ 】\n` +
                 `┣╾━━━━━━━━━━━━━━━━╼\n` +
-                `┃\n` +
                 `┃ 👑 *Owner:*   ${config.ownername || 'Nord-X'}\n` +
                 `┃ 🏷️ *Version:* v${config.version || '0.0.0.7'}\n` +
                 `┃ ⏱️ *Uptime:*  ${uptime}\n` +
                 `┃ 💾 *Memory:* ${usedMem}MB / ${totalMem}MB\n` +
                 `┃ ⚙️ *Node:*   ${process.version}\n` +
                 `┃ 🔣 *Prefix:* ${config.prefix}\n` +
-                `┃\n` +
                 `┗╾━━━━━━━━━━━━━━━━╼\n` +
                 `\n> ᴛʏᴘᴇ ${config.prefix}ᴍᴇɴᴜ ꜰᴏʀ ᴄᴏᴍᴍᴀɴᴅs`;
 
