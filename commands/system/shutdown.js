@@ -1,28 +1,24 @@
 'use strict';
 
-const config   = require('../../config');
-const { send } = require('../../helpers');
+const config               = require('../../config');
+const { send, ownerGuard } = require('../../helpers');
 
 module.exports = {
-    name: 'shutdown',
-    aliases: ['poweroff', 'stop'],
-    category: 'owner',
-    description: 'Shut down the bot',
-    usage: `${config.prefix}shutdown`,
-    ownerOnly: true,
+    name:        'shutdown',
+    aliases:     ['poweroff', 'stop'],
+    category:    'system',
+    description: 'Stop the bot process without triggering an automatic restart',
+    usage:       `${config.prefix}shutdown`,
+    ownerOnly:   true,
 
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
-        try {
-            await sock.sendMessage(jid, {
-                text: `⬡ ᴠx-sʏs — shutting down\n▸ Process terminating. Restart manually when ready.`
-            }, { quoted: msg });
+        if (await ownerGuard(sock, msg)) return;
 
-            setTimeout(() => process.exit(0), 1500);
+        await sock.sendMessage(jid, {
+            text: '⬡ ᴠx-sʏs — shutting down\n▸ Process terminating. Restart manually when ready.',
+        }, { quoted: msg }).catch((err) => console.error('[shutdown] sendMessage failed:', err.message));
 
-        } catch (err) {
-            console.error('[shutdown]', err.message);
-            await send(sock, jid, global.mess.error);
-        }
-    }
+        setTimeout(() => process.kill(process.pid, 'SIGINT'), 1500);
+    },
 };
