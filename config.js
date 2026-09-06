@@ -5,9 +5,11 @@ const fs    = require('fs');
 const chalk = require('chalk');
 
 // ── 1. BOT IDENTITY ─────────────────────────
+const { version: PKG_VERSION } = require('./package.json');
+
 const BOT = {
   name:    process.env.BOT_NAME     || 'VANTAGE-X MD',
-  version: '0.0.0.7',
+  version: PKG_VERSION,
   owner: {
     number: process.env.OWNER_NUMBER || '27686881403',
     name:   process.env.OWNER_NAME   || 'Nord-X',
@@ -132,6 +134,7 @@ fs.watchFile(_self, () => {
 // ── 9. NAMED EXPORTS ────────────────────────
 module.exports = {
   BOT, LINKS, BRANDING, FEATURES, MESSAGES,
+  version:         BOT.version,
   botname:         BOT.name,
   ownername:       BOT.owner.name,
   ownernumber:     BOT.owner.number,
