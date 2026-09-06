@@ -2,6 +2,7 @@
 
 const config = require('./config');
 const os     = require('os');
+const { version: PKG_VERSION } = require('./package.json');
 
 // ── Unicode helpers ───────────────────────────────────────────────────────────
 
@@ -19,7 +20,7 @@ const FANCY_DIGITS = ['𝟶','𝟷','𝟸','𝟹','𝟺','𝟻','𝟼','𝟽','�
 class VantageMenu {
 
     constructor() {
-        this.version = '0.0.0.7';
+        this.version = PKG_VERSION;
         this.owner   = config.ownername || 'Nord-X';
         this.prefix  = config.prefix    || '!';
         this.botname = 'Vantage-X MD';
