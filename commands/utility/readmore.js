@@ -2,13 +2,7 @@
 
 const config   = require('../../config');
 const { send } = require('../../helpers');
-
-// The readmore trick works by inserting a massive block of invisible characters
-// between the first word and the rest of the text. WhatsApp collapses this into
-// a "Read more" button on the receiver's end.
-// The \u200E (left-to-right mark) is the invisible character that does the work.
-
-const READMORE_SEP = '\u200E\n'.repeat(4001) + '\u200E';
+const READMORE_SEP = '\u200E\n'.repeat(2700) + '\u200E';
 
 module.exports = {
     name: 'readmore',
