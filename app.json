@@ -88,11 +88,6 @@
       "description": "Telegram support link.",
       "value": "https://t.me/N0rd_X"
     },
-    "DISCORD": {
-      "description": "Discord support link.",
-      "value": "https://discord.com/PLACEHOLDER"
-    }
-  },
   "buildpacks": [
     {
       "url": "https://github.com/heroku/heroku-buildpack-nodejs.git"
