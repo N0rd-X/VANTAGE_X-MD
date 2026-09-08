@@ -82,17 +82,12 @@
     },
     "WHATSAPP_CHANNEL": {
       "description": "WhatsApp channel link.",
-      "value": "https://whatsapp.com/channel/PLACEHOLDER"
+      "value": "https://whatsapp.com/channel/0029VbE0dNM0rGiHzZ5KEY2i"
     },
     "TELEGRAM": {
       "description": "Telegram support link.",
       "value": "https://t.me/N0rd_X"
     },
-    "DISCORD": {
-      "description": "Discord support link.",
-      "value": "https://discord.com/PLACEHOLDER"
-    }
-  },
   "buildpacks": [
     {
       "url": "https://github.com/heroku/heroku-buildpack-nodejs.git"

@@ -93,7 +93,7 @@ function attach(sock, cmdRef) {
         if (cmdName === 'menu' || (cmdName === 'help' && !args[0])) {
             const menu     = new VantageMenu();
             const cat      = args[0]?.toLowerCase();
-            const count    = cmdRef.commands.size;
+            const count    = new Set(cmdRef.commands.values()).size;
             const menuText = cat ? menu.getCategoryMenu(cat) : menu.getMainMenu(count);
 
             if (!cat && global.thumb?.length) {

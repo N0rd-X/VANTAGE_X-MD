@@ -3,7 +3,7 @@
   "description": "Fast. Smart. Yours.",
   "logo": "https://res.cloudinary.com/fgeb24n7/image/upload/v1783969437/owner_dhgema.png",
   "keywords": ["bot"],
-  "documentation-link": "https://N0rd-xtech.zone.id/session",
+  "documentation-link": "https://github.com/N0rd-X/VANTAGE_X-MD/blob/main/README.md",
   "owner-verification": "https://wa.me/27686881403",
   "env": {
     "SESSION_ID": {

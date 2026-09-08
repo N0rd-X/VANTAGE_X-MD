@@ -11,7 +11,7 @@ const DB_DIR = path.join(__dirname, '..', 'database');
 
 // Top-level database files with their default values
 const DB_FILES = {
-    'anticall.json':        { enabled: false, mode: 'decline' },
+    'anticall.json':        { enabled: false, mode: 'reject' },
     'antilink.json':        {},
     'antispam.json':        {},
     'antinsfw.json':        {},

@@ -84,16 +84,15 @@ async function runMessageAutos(sock, jid, msgKey, isCmd, fromMe) {
             .catch(err => console.error('[AUTO-READ]', err.message));
     }
 
-    // Auto-typing indicator
-    if (global.autoTyping && isCmd) {
-        await sock.sendPresenceUpdate('composing', jid)
-            .catch(err => console.error('[AUTO-TYPING]', err.message));
-    }
-
-    // Auto-recording indicator
-    if (global.autoRecording && isCmd) {
-        await sock.sendPresenceUpdate('recording', jid)
-            .catch(err => console.error('[AUTO-RECORDING]', err.message));
+    // Auto-typing & auto-recording
+    if (isCmd) {
+        if (global.autoTyping) {
+            await sock.sendPresenceUpdate('composing', jid)
+                .catch(err => console.error('[AUTO-TYPING]', err.message));
+        } else if (global.autoRecording) {
+            await sock.sendPresenceUpdate('recording', jid)
+                .catch(err => console.error('[AUTO-RECORDING]', err.message));
+        }
     }
 
     // Auto-react to incoming messages
