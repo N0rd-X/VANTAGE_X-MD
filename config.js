@@ -22,7 +22,7 @@ const LINKS = {
   whatsappGroup:   process.env.WHATSAPP_GROUP
                     || 'https://chat.whatsapp.com/PLACEHOLDER',
   whatsappChannel: process.env.WHATSAPP_CHANNEL
-                    || 'https://whatsapp.com/channel/PLACEHOLDER',
+                    || 'https://whatsapp.com/channel/0029VbE0dNM0rGiHzZ5KEY2i',
   telegram:        process.env.TELEGRAM
                     || 'https://t.me/N0rd_X',
 };
