@@ -79,9 +79,26 @@ function checkFfmpeg() {
     }
 }
 
+
+// ── zbar-tools ────────────────────────────────────────────────────────────────
+// Required by readqr.js to scan QR codes from images.
+// Not auto-installed (too platform-specific) — check and inform only.
+
+function checkZbar() {
+    if (checkBinary('zbarimg')) {
+        console.log(`${OK} zbar-tools found`);
+    } else {
+        console.warn(`${WARN} zbar-tools not found — the !readqr command will be unavailable.`);
+        console.warn(`   Termux: pkg install zbar`);
+        console.warn(`   VPS:    sudo apt install zbar-tools -y`);
+        console.warn(`   macOS:  brew install zbar`);
+    }
+}
+
 // ── Run ───────────────────────────────────────────────────────────────────────
 
 console.log('\n\x1b[36m━━━ Installing system dependencies ━━━\x1b[0m');
 try { installYtDlp(); } catch (e) { console.warn(`${WARN} yt-dlp install error:`, e.message); }
 try { checkFfmpeg();  } catch (e) { console.warn(`${WARN} ffmpeg check error:`,   e.message); }
+try { checkZbar();    } catch (e) { console.warn(`${WARN} zbar check error:`,    e.message); }
 console.log('\x1b[36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m\n');
