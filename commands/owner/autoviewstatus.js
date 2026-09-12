@@ -1,0 +1,48 @@
+const config = require('../../config');
+const fs = require('fs');
+const path = require('path');
+
+const DB_PATH = path.join(__dirname, '../../database/autoviewstatus.json');
+
+function loadDB() {
+    try { return JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); } catch { return { enabled: false }; }
+}
+function saveDB(data) {
+    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+}
+
+module.exports = {
+    name: 'autoviewstatus',
+    aliases: ['autoopenstatus'],
+    category: 'owner',
+    description: 'Toggle auto-view status/stories',
+    weight: 'heavy',
+    usage: `${config.prefix}autoviewstatus <on|off>`,
+    ownerOnly: true,
+    
+    async execute(sock, msg, args) {
+        try {
+            const jid = msg.key.remoteJid;
+            if (await ownerGuard(sock, msg)) return;
+            
+            const action = args[0]?.toLowerCase();
+            const db = loadDB();
+            
+            if (action === 'on') {
+                db.enabled = true;
+                saveDB(db);
+                return await sock.sendMessage(jid, { text: '👁️ Auto-view status enabled.' });
+            } else if (action === 'off') {
+                db.enabled = false;
+                saveDB(db);
+                return await sock.sendMessage(jid, { text: '👁️ Auto-view status disabled.' });
+            }
+            
+            const status = db.enabled ? 'ON 🟢' : 'OFF 🔴';
+            await sock.sendMessage(jid, { text: `👁️ *Auto-View Status*: ${status}\n\n${this.usage}` });
+        } catch (error) {
+            console.error('AutoViewStatus error:', error.message);
+            await sock.sendMessage(msg.key.remoteJid, { text: global.mess.error });
+        }
+    }
+};
