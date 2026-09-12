@@ -1,6 +1,6 @@
 'use strict';
 
-const { smsg }   = require('../lib/myfunc');
+const { smsg }   = require('../helpers');
 const { readDb } = require('../lib/db');
 const { isOwner, run: runCommand } = require('../services/commands');
 const chatbot     = require('../services/chatbot');
