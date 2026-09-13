@@ -3,6 +3,7 @@
 const config   = require('../../config');
 const axios    = require('axios');
 const { send } = require('../../helpers');
+const { card, sc } = require('../../lib/messageStyle');
 
 module.exports = {
     name: 'apk',
@@ -43,27 +44,30 @@ module.exports = {
                 });
             }
 
-            const sizeMB  = app.size ? (app.size / 1_048_576).toFixed(2) : '?';
-            const rating  = app.stats?.rating?.avg?.toFixed(1) || 'N/A';
-            const pkg     = app.package || 'N/A';
-            const dev     = app.developer?.name || 'N/A';
+            const sizeMB = app.size ? (app.size / 1_048_576).toFixed(2) : '?';
+            const rating = app.stats?.rating?.avg?.toFixed(1) || 'N/A';
+            const pkg    = app.package || 'N/A';
+            const dev    = app.developer?.name || 'N/A';
 
-            await sock.sendMessage(jid, { delete: wait.key });
+            await sock.sendMessage(jid, {
+                text: `✅ Found *${app.name}* — sending…`,
+                edit: wait.key
+            });
 
             await sock.sendMessage(jid, {
                 document: { url: fileUrl },
                 fileName: `${app.name}.apk`,
                 mimetype: 'application/vnd.android.package-archive',
-                caption:
-                    `┏╾━━━━━━━━━━━━━━━━╼\n` +
-                    `┃ 📦【 ᴀᴘᴋ ᴅᴏᴡɴʟᴏᴀᴅ 】\n` +
-                    `┣╾━━━━━━━━━━━━━━━━╼\n` +
-                    `┃📦 *Name:*      ${app.name}\n` +
-                    `┃🏋 *Size:*      ${sizeMB} MB\n` +
-                    `┃📦 *Package:*   ${pkg}\n` +
-                    `┃👨‍💻 *Developer:* ${dev}\n` +
-                    `┃⭐ *Rating:*   ${rating}\n` +
-                    `┗╾━━━━━━━━━━━━━━━━╼`
+                caption: card(
+                    `📦【 ${sc('apk download')} 】`,
+                    [
+                        `📦 ${sc('name')}:      ${app.name}`,
+                        `🏋 ${sc('size')}:      ${sizeMB} MB`,
+                        `📦 ${sc('package')}:   ${pkg}`,
+                        `👨‍💻 ${sc('developer')}: ${dev}`,
+                        `⭐ ${sc('rating')}:   ${rating}`,
+                    ]
+                )
             }, { quoted: msg });
 
         } catch (err) {
