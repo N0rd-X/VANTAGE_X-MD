@@ -1,19 +1,9 @@
 'use strict';
 
-const config = require('./config');
-const os     = require('os');
-const { version: PKG_VERSION } = require('./package.json');
-
-// ── Unicode helpers ───────────────────────────────────────────────────────────
-
-const SMALL_CAPS = {
-    a:'ᴀ', b:'ʙ', c:'ᴄ', d:'ᴅ', e:'ᴇ', f:'ꜰ', g:'ɢ', h:'ʜ',
-    i:'ɪ', j:'ᴊ', k:'ᴋ', l:'ʟ', m:'ᴍ', n:'ɴ', o:'ᴏ', p:'ᴘ',
-    q:'ǫ', r:'ʀ', s:'s', t:'ᴛ', u:'ᴜ', v:'ᴠ', w:'ᴡ', x:'x',
-    y:'ʏ', z:'ᴢ',
-};
-
-const FANCY_DIGITS = ['𝟶','𝟷','𝟸','𝟹','𝟺','𝟻','𝟼','𝟽','𝟾','𝟿'];
+const config                    = require('./config');
+const os                        = require('os');
+const { version: PKG_VERSION }  = require('./package.json');
+const { sc, fd }                = require('./lib/messageStyle');
 
 // ── Class ─────────────────────────────────────────────────────────────────────
 
@@ -30,16 +20,8 @@ class VantageMenu {
 
     // ── Styling helpers ───────────────────────────────────────────────────────
 
-    _styled(name) {
-        return String(name).toLowerCase().split('').map(c => SMALL_CAPS[c] || c).join('');
-    }
-
-    _fancyNum(str) {
-        return String(str).split('').map(c => {
-            const code = c.charCodeAt(0);
-            return code >= 48 && code <= 57 ? FANCY_DIGITS[code - 48] : c;
-        }).join('');
-    }
+    _styled(name)  { return sc(name); }
+    _fancyNum(str) { return fd(str, 'monospace'); }
 
     _formatUptime(seconds) {
         const d = Math.floor(seconds / 86400);
@@ -128,7 +110,7 @@ class VantageMenu {
     _bigAIMenu() {
         return this._bigBlock('🧠 ᴀɪ ᴍᴇɴᴜ', [
             { icon: '⌨️',  title: 'ᴛᴇxᴛ ᴀɪ',          items: ['deepseek','chatgpt','metaai','gemini','perplexity','claude'] },
-            { icon: '🎨',  title: 'ɪᴍᴀɢᴇ ᴀɪ',          items: ['imagine','nanobanana','gpt2img','remini','detect'] },
+            { icon: '🎨',  title: 'ɪᴍᴀɢᴇ ᴀɪ',          items: ['imagine','nanobanana','gptimg2','remini'] },
         ]);
     }
 
@@ -191,7 +173,7 @@ class VantageMenu {
 
     _bigGroupMenu() {
         return this._bigBlock('👥 ɢʀᴏᴜᴘ ᴍᴇɴᴜ', [
-            { icon: '🛂',  title: 'ᴀᴅᴍɪɴ ᴄᴏʀᴇ',        items: ['promote','demote','mute','unmute','add','kick','help'] },
+            { icon: '🛂',  title: 'ᴀᴅᴍɪɴ ᴄᴏʀᴇ',        items: ['promote','demote','mute','unmute','add','kick'] },
             { icon: '🛡️', title: 'sᴀꜰᴇɢᴜᴀʀᴅ',         items: ['antilink','antibot','antispam','antiviewonce','antinsfw','antibadword','warn','resetwarn','delete'] },
             { icon: '🔧',  title: 'ɢʀᴏᴜᴘ sᴇᴛᴛɪɴɢs',   items: ['ginfo','welcome','setwelcome','goodbye','setgoodbye','accept','acceptall','reject','rejectall','autosticker'] },
         ]);
@@ -250,9 +232,8 @@ class VantageMenu {
 ╽ 🎨 [ ɪᴍᴀɢᴇ ᴀɪ ]
 ╽ ⌬ ${p}imagine <description>
 ╽ ⌬ ${p}nanobanana <description>
-╽ ⌬ ${p}gpt2img <description>
+╽ ⌬ ${p}gptimg2 <description>
 ╽ ⌬ ${p}remini (reply image)
-╽ ⌬ ${p}detect (reply image)
 ╰╾━━━━━━━━━━━━━━━━╼⊷`;
     }
 
@@ -353,7 +334,7 @@ class VantageMenu {
 ╽ ⌬ ${p}tagall <message>
 ╽ ⌬ ${p}hidetag <message>
 ╽ ⌬ ${p}tagadmin
-╽ ⌬ ${p}translate <lang> <text>
+╽ ⌬ ${p}translate <text> | <lang>
 ╽ ⌬ ${p}ocr (reply image)
 ╽ ⌬ ${p}afk <reason>
 ╽ ⌬ ${p}poll <question>
@@ -472,7 +453,6 @@ class VantageMenu {
 ╽ ⌬ ${p}unmute
 ╽ ⌬ ${p}add <number>
 ╽ ⌬ ${p}kick @user
-╽ ⌬ ${p}help <command>
 ┠╾━━━━━━━━╼
 ╽ 🛡️ [ sᴀꜰᴇɢᴜᴀʀᴅ ]
 ╽ ⌬ ${p}antilink on/off
@@ -563,24 +543,7 @@ class VantageMenu {
 ╰╾━━━━━━━━━━━━━━━━╼⊷`;
     }
 
-    // ── Alive card ────────────────────────────────────────────────────────────
-
-    getAliveMessage() {
-        const s = this.getSystemStats();
-        return `╭━━━━❰ 𝗩𝗮𝗻𝘁𝗮𝗴𝗲-𝗫 𝗠𝗗 ❱━━━━╮
-┃ ⚡ *ʙᴏᴛ ɪs ᴀʟɪᴠᴇ*
-┃
-┃ 👑 *ᴏᴡɴᴇʀ:*    ${s.owner}
-┃ 👥 *ᴛᴇᴀᴍ:*     ${this._styled(this.team)}
-┃ 📊 *ᴍᴇᴍᴏʀʏ:*  ${s.memory}
-┃ ⏱️ *ᴜᴘᴛɪᴍᴇ:*  ${s.uptime}
-┃ 🔣 *ᴘʀᴇꜰɪx:*   ${this.prefix}
-┃ 🏷️ *ᴠᴇʀsɪᴏɴ:* ${this.version}
-╰━━━━━━━━━━━━━━━━━━━━╯
-
-> ᴛʏᴘᴇ ${this.prefix}ᴍᴇɴᴜ ꜰᴏʀ ᴄᴏᴍᴍᴀɴᴅs`;
-    }
-
 }
 
 module.exports = VantageMenu;
+

@@ -2,14 +2,22 @@
 
 const config   = require('../../config');
 const { send } = require('../../helpers');
-const READMORE_SEP = '\u200E\n'.repeat(2700) + '\u200E';
+
+// Root cause of the double "Read more" bug:
+// '\u200E\n'.repeat(2700) inserts 2700 REAL newlines into the message bubble.
+// WhatsApp renders those newlines, creating a massive bubble with the hidden
+// text pushed 2700 lines down — then collapses that into a second Read More.
+//
+// Fix: no newlines in the separator. Just invisible LTR marks repeated until
+// WhatsApp triggers the collapse (~4001 minimum).
+const READMORE_SEP = '\u200E'.repeat(4001);
 
 module.exports = {
     name: 'readmore',
     aliases: ['spoiler', 'rm'],
     category: 'utility',
     description: 'Hide text behind a WhatsApp "Read more" collapse',
-    usage: `${config.prefix}readmore <visible text> | <hidden text>`,
+    usage: `${config.prefix}readmore <visible> | <hidden>`,
 
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
@@ -19,29 +27,28 @@ module.exports = {
             if (!input) {
                 return send(sock, jid,
                     `❌ Usage: ${this.usage}\n\n` +
-                    `Example: ${config.prefix}readmore Click to reveal | This is the hidden part!`
+                    `Example: ${config.prefix}readmore Tap to read | Hidden content here`
                 );
             }
 
-            // Support "visible | hidden" split for clarity
-            // Falls back to first word visible + rest hidden if no | present
             let visible, hidden;
 
             if (input.includes('|')) {
-                [visible, ...hidden] = input.split('|').map(s => s.trim());
-                hidden = hidden.join('|').trim();
+                const lastPipe = input.lastIndexOf('|');
+                visible = input.slice(0, lastPipe).trim();
+                hidden  = input.slice(lastPipe + 1).trim();
             } else {
                 const words = input.split(' ');
                 visible = words[0];
                 hidden  = words.slice(1).join(' ');
             }
 
-            if (!hidden) {
-                return send(sock, jid, '❌ Need at least two parts — use: visible text | hidden text');
-            }
+            if (!visible) return send(sock, jid, '❌ Visible text cannot be empty.');
+            if (!hidden)  return send(sock, jid, '❌ Need something to hide — use: visible | hidden');
 
-            const text = `${visible}${READMORE_SEP}${hidden}`;
-            await sock.sendMessage(jid, { text }, { quoted: msg });
+            await sock.sendMessage(jid, {
+                text: `${visible}${READMORE_SEP}${hidden}`
+            }, { quoted: msg });
 
         } catch (err) {
             console.error('[readmore]', err.message);

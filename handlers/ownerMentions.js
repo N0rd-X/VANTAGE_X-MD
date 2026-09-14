@@ -1,36 +1,41 @@
 'use strict';
 
-/**
- * Acknowledges owner mentions when tagged by non-owners.
- */
+const config = require('../config');
 
-const messageStyle = require('../lib/messageStyle');
-const config       = require('../config');
-
-/**
- * @param {object} sock - Baileys socket
- * @param {object} msg  - raw message (needs msg.key, msg.message, msg.pushName)
- * @returns {boolean} true if the owner was tagged (caller should stop processing)
- */
 async function handleOwnerProtection(sock, msg) {
     try {
         const jid    = msg.key.remoteJid;
         const sender = msg.key.participant || msg.key.remoteJid;
 
         const mentioned = msg.message?.extendedTextMessage?.contextInfo?.mentionedJid;
-        if (!mentioned || mentioned.length === 0) return false;
+        if (!mentioned?.length) return false;
 
         const ownerJid = `${config.ownernumber}@s.whatsapp.net`;
         if (!mentioned.includes(ownerJid)) return false;
         if (sender === ownerJid) return false; // owner tagging themselves — ignore
 
         const senderName = msg.pushName || 'User';
-        await messageStyle.sendOwnerMentions(sock, jid, config.ownername, senderName);
+
+        await sock.sendMessage(jid, {
+            image:       { url: config.vantagexpp },
+            caption:     `⚠️ *You tagged my owner ${config.ownername}*\n\n🛡️ Please respect the owner, ${senderName}!`,
+            contextInfo: {
+                externalAdReply: {
+                    title:                 `You tagged my owner ${config.ownername}`,
+                    body:                  `${config.botname} MULTIDEVICE`,
+                    thumbnailUrl:          config.vantagexpp,
+                    sourceUrl:             config.whatsappgroup,
+                    mediaType:             1,
+                    showAdAttribution:     true,
+                    renderLargerThumbnail: true,
+                },
+            },
+        });
 
         console.log(`[OWNER PROTECTION] ${senderName} tagged owner in ${jid}`);
         return true;
-    } catch (error) {
-        console.error('Owner protection error:', error);
+    } catch (err) {
+        console.error('[ownerMentions]', err.message);
         return false;
     }
 }

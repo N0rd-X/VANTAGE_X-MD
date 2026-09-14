@@ -2,7 +2,7 @@
 const config = require('../../config');
 const { send } = require('../../helpers');
 
-const MESSAGE = '🚧 *Terabox downloder is currently still in development.*\n\nStay tuned for updates!';
+const MESSAGE = '🚧 *Terabox downloader is currently still in development.*\n\nStay tuned for updates!';
 
 module.exports = {
     name: 'terabox',

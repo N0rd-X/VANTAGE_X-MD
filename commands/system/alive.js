@@ -1,8 +1,9 @@
 'use strict';
 
-const config   = require('../../config');
-const os       = require('os');
-const { send } = require('../../helpers');
+const config                 = require('../../config');
+const os                     = require('os');
+const { send }               = require('../../helpers');
+const { card }               = require('../../lib/messageStyle');
 
 module.exports = {
     name: 'alive',
@@ -21,21 +22,17 @@ module.exports = {
             const uptimeSecs = Math.floor(process.uptime());
             const d = Math.floor(uptimeSecs / 86400);
             const h = Math.floor((uptimeSecs % 86400) / 3600);
-            const m = Math.floor((uptimeSecs % 3600) / 60);
-            const uptime = `${d}d ${h}h ${m}m`;
+            const m = Math.floor((uptimeSecs % 3600)  / 60);
 
             const text =
-                `┏╾━━━━━━━━━━━━━━━━╼\n` +
-                `┃ ⚡【 ᴠᴀɴᴛᴀɢᴇ-x ɪs ᴀʟɪᴠᴇ 】\n` +
-                `┣╾━━━━━━━━━━━━━━━━╼\n` +
-                `┃ 👑 *Owner:*   ${config.ownername || 'Nord-X'}\n` +
-                `┃ 🏷️ *Version:* v${config.version || '0.0.0.7'}\n` +
-                `┃ ⏱️ *Uptime:*  ${uptime}\n` +
-                `┃ 💾 *Memory:* ${usedMem}MB / ${totalMem}MB\n` +
-                `┃ ⚙️ *Node:*   ${process.version}\n` +
-                `┃ 🔣 *Prefix:* ${config.prefix}\n` +
-                `┗╾━━━━━━━━━━━━━━━━╼\n` +
-                `\n> ᴛʏᴘᴇ ${config.prefix}ᴍᴇɴᴜ ꜰᴏʀ ᴄᴏᴍᴍᴀɴᴅs`;
+                card('⚡【 ᴠᴀɴᴛᴀɢᴇ-x ɪs ᴀʟɪᴠᴇ 】', [
+                    `👑 *Owner:*   ${config.ownername}`,
+                    `🏷️ *Version:* v${config.version}`,
+                    `⏱️ *Uptime:*  ${d}d ${h}h ${m}m`,
+                    `💾 *Memory:*  ${usedMem}MB / ${totalMem}MB`,
+                    `⚙️ *Node:*    ${process.version}`,
+                    `🔣 *Prefix:*  ${config.prefix}`,
+                ]) + `\n\n> ᴛʏᴘᴇ ${config.prefix}ᴍᴇɴᴜ ꜰᴏʀ ᴄᴏᴍᴍᴀɴᴅs`;
 
             await sock.sendMessage(jid, { text }, { quoted: msg });
 

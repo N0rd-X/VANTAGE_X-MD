@@ -6,10 +6,10 @@
 
 **Fast. Smart. Yours.**
 
-[![Version](https://img.shields.io/badge/version-0.0.0.7--alpha-blue.svg)](https://github.com/N0rd-X/Vantage_X-MD/releases)
+[![Version](https://img.shields.io/badge/version-0.0.2--alpha-blue.svg)](https://github.com/N0rd-X/VANTAGE_X-MD/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-20.x-brightgreen.svg)](https://nodejs.org)
-[![Stars](https://img.shields.io/github/stars/N0rd-X/Vantage_X-MD?style=social)](https://github.com/N0rd-X/Vantage_X-MD/stargazers)
+[![Stars](https://img.shields.io/github/stars/N0rd-X/VANTAGE_X-MD?style=social)](https://github.com/N0rd-X/VANTAGE_X-MD/stargazers)
 
 </div>
 
@@ -20,7 +20,7 @@
 **1. Fork this repository**
 
 <div align="center">
-<a href="https://github.com/N0rd-X/Vantage_X-MD/fork">
+<a href="https://github.com/N0rd-X/VANTAGE_X-MD/fork">
   <img src="https://img.shields.io/badge/Fork-VANTAGE--X%20MD-00D9FF?style=for-the-badge&logo=github&logoColor=white">
 </a>
 </div>
@@ -36,7 +36,7 @@
 **3. Configure and run**
 
 ```bash
-git clone https://github.com/N0rd-X/Vantage_X-MD.git
+git clone https://github.com/N0rd-X/VANTAGE_X-MD.git
 cd Vantage_X-MD
 npm install
 cp .env.example .env   # set SESSION_ID and OWNER_NUMBER
@@ -53,10 +53,10 @@ Full setup instructions → [INSTALL.md](INSTALL.md)
 
 | Platform | Link |
 |---|---|
-| Railway | [![Railway](https://img.shields.io/badge/Railway-000000?style=for-the-badge&logo=railway&logoColor=white)](https://railway.app/new/template?template=https://github.com/N0rd-X/Vantage_X-MD) |
+| Railway | [![Railway](https://img.shields.io/badge/Railway-000000?style=for-the-badge&logo=railway&logoColor=white)](https://railway.app/new/template?template=https://github.com/N0rd-X/VANTAGE_X-MD) |
 | Render | [![Render](https://img.shields.io/badge/Render-000000?style=for-the-badge&logo=render&logoColor=white)](https://dashboard.render.com/select-repo?type=web) |
-| Koyeb | [![Koyeb](https://img.shields.io/badge/Koyeb-FF009D?style=for-the-badge&logo=koyeb&logoColor=white)](https://app.koyeb.com/services/deploy?type=git&repository=N0rd-X/Vantage_X-MD) |
-| Heroku | [![Heroku](https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white)](https://dashboard.heroku.com/new?template=https://github.com/N0rd-X/Vantage_X-MD) |
+| Koyeb | [![Koyeb](https://img.shields.io/badge/Koyeb-FF009D?style=for-the-badge&logo=koyeb&logoColor=white)](https://app.koyeb.com/services/deploy?type=git&repository=N0rd-X/VANTAGE_X-MD) |
+| Heroku | [![Heroku](https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white)](https://dashboard.heroku.com/new?template=https://github.com/N0rd-X/VANTAGE_X-MD) |
 
 </div>
 
@@ -103,13 +103,15 @@ Full command reference → [COMMANDS.md](COMMANDS.md)
 | [COMMANDS.md](COMMANDS.md) | Command reference and category taxonomy |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [SECURITY.md](SECURITY.md) | Responsible disclosure and session safety |
+| [CHANGELOG.md](CHANGELOG.md) | Version history |
 
 ---
 
 ## Acknowledgments
 
-- [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys) — the WhatsApp library this is built on
-- Everyone who has starred, forked, or contributed
+- [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys) — The WhatsApp library this project is built on
+- Nord-X — Development and maintenance
+- Community — Every star, fork, and contribution ❤️
 
 ---
 
@@ -121,6 +123,7 @@ MIT — free to use, modify, and distribute. See [LICENSE](LICENSE).
 
 <div align="center">
 
-Made by [Nord-X](https://github.com/N0rd-X) · [Star this repo](https://github.com/N0rd-X/Vantage_X-MD/stargazers) if you like the bot
+Made by [Nord-X](https://github.com/N0rd-X) · [Star this repo](https://github.com/N0rd-X/VANTAGE_X-MD/stargazers) if you like the bot
 
 </div>
+

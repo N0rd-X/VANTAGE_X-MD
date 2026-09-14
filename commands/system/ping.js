@@ -1,7 +1,8 @@
 'use strict';
 
-const config   = require('../../config');
-const { send } = require('../../helpers');
+const config                 = require('../../config');
+const { send }               = require('../../helpers');
+const { card }               = require('../../lib/messageStyle');
 
 module.exports = {
     name: 'ping',
@@ -21,15 +22,12 @@ module.exports = {
             const grade = ms < 100 ? 'excellent' : ms < 300 ? 'good' : ms < 600 ? 'fair' : 'slow';
 
             await sock.sendMessage(jid, {
-                text:
-                    `┏╾━━━━━━━━━━━━━━━━╼\n` +
-                    `┃ 🏓【 ᴘᴏɴɢ 】\n` +
-                    `┣╾━━━━━━━━━━━━━━━━╼\n` +
-                    `┃ ⚡ *Latency:* ${ms}ms\n` +
-                    `┃ 📶 *Signal:* ${bar}\n` +
-                    `┃ 📊 *Grade:*  ${grade}\n` +
-                    `┗╾━━━━━━━━━━━━━━━━╼`,
-                edit: sent.key
+                text: card('🏓【 ᴘᴏɴɢ 】', [
+                    `⚡ *Latency:* ${ms}ms`,
+                    `📶 *Signal:*  ${bar}`,
+                    `📊 *Grade:*   ${grade}`,
+                ]),
+                edit: sent.key,
             });
 
         } catch (err) {

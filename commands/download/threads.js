@@ -2,7 +2,7 @@
 const config = require('../../config');
 const { send } = require('../../helpers');
 
-const MESSAGE = '🚧 *Threads downloder is currently still in development.*\n\nStay tuned for updates!';
+const MESSAGE = '🚧 *Threads downloader is currently still in development.*\n\nStay tuned for updates!';
 
 module.exports = {
     name: 'threads',

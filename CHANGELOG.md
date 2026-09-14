@@ -3,6 +3,32 @@
 All notable changes to **VANTAGE-X MD** are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.0.2-alpha] — 14-09-2026
+
+### Added
+- `!hidetag` now reposts the exact replied message (text, image, video, sticker) with all members invisibly mentioned
+- `encode` and `decode` now support `url` and `ascii` encoding types in addition to `base64`, `hex`, and `binary`
+- `readqr` now checks for `zbarimg` at module load time and returns a human-readable install guide per platform (Termux / VPS / macOS) if the binary is missing rather than crashing
+- `scripts/install-deps.js` now includes a `checkZbar()` step alongside the existing ffmpeg and yt-dlp checks
+- `autoreply` database extended with type-based sub-files (`apk`, `doc`, `image`, `sticker`, `video`, `vn`, `zip`)
+
+### Fixed
+- `!readmore` produced a massive bubble with two "Read more" buttons — root cause was `'\u200E\n'.repeat(2700)` inserting 2700 real newlines into the message. Fixed to `'\u200E'.repeat(4001)` — no newlines, correct invisible character count
+- `!tagall` was identical to `!hidetag` — now sends a distinct styled card with a numbered member list and the message above it
+- `!hidetag` previously sent a plain text message regardless of what was replied to — now correctly reposts the replied content with hidden mentions
+- `!apk` was deleting the loading message before sending the APK — now edits it in place
+- `!ginfo`, `!welcome`, and `!goodbye` were styled with inline frame strings — now pull styling from `lib/messageStyle.js` via `card()` and `sc()` consistent with every other styled command
+
+### Changed
+- `encode` / `decode` syntax changed from `!encode base64 Hello` to `!encode Hello | base64` — splits on last pipe so text can contain pipe characters
+- `config.js` now loads persistent settings from `database/settings.json` at startup so prefix, owner number, and owner name survive process restarts without re-running owner commands
+
+### Removed
+- `myfunc.js` and `myfunc2.js` — legacy files, handlers does the same better
+- `VantageX.js` stub — no longer referenced anywhere
+
+---
+
 ## [0.0.1-alpha] — 09-09-2026
 
 First official alpha release of VANTAGE-X MD.
