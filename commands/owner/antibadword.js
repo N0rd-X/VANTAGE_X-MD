@@ -1,3 +1,5 @@
+'use strict';
+
 const config = require('../../config');
 const fs = require('fs');
 const path = require('path');
@@ -10,7 +12,7 @@ module.exports = {
     aliases: ['filter', 'antiprofanity',],
     category: 'group',
     description: 'Manage profanity filter',
-    usage: `${config.prefix}badword <on|off|add|remove|list> [word]`,
+    usage: `${config.prefix}antibadword <on|off|add|remove|list> [word]`,
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
