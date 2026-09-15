@@ -1,7 +1,9 @@
+'use strict';
+
 const config = require('../../config');
 const fs = require('fs');
 const path = require('path');
-
+const { ownerGuard } = require('../../helpers');
 const DB_PATH = path.join(__dirname, '../../database/autoread.json');
 
 function loadDB() {
