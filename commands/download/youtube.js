@@ -1,18 +1,20 @@
 'use strict';
-const config  = require('../../config');
-const { send } = require('../../helpers');
+
+const config    = require('../../config');
+const { send }  = require('../../helpers');
 const { ytdlp } = require('../../lib/ytdlp');
 
 module.exports = {
     name: 'youtube',
-    aliases: ['yt', 'ytdl', 'ytaudio'],
+    aliases: ['yt', 'ytdl', 'ytvideo'],
     category: 'download',
-    description: 'Download YouTube audio (mp3)',
+    description: 'Download a YouTube video',
     weight: 'heavy',
     usage: `${config.prefix}youtube <search query or URL>`,
 
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
+        let wait;
         try {
             if (!args[0]) {
                 return await send(sock, jid,
@@ -23,36 +25,45 @@ module.exports = {
             }
 
             const query = args.join(' ');
-            const wait  = await sock.sendMessage(jid, { text: '🎵 Fetching audio…' });
+            const isUrl = /^https?:\/\//i.test(query);
+
+            if (isUrl && !/youtu\.?be|youtube\.com/i.test(query)) {
+                return await send(sock, jid,
+                    `❌ This command is YouTube only.\n` +
+                    `Use *${config.prefix}video* to download from other platforms.`
+                );
+            }
+
+            wait = await sock.sendMessage(jid, { text: '🎬 Fetching video…' });
 
             const result = await ytdlp(query, {
-                type:    'audio',
-                maxSecs: 900,    // 15-minute cap for audio
-                format:  'mp3'
+                type:    'video',
+                maxSecs: 600,   // 10-minute cap
             });
 
-            await sock.sendMessage(jid, { delete: wait.key });
+            await sock.sendMessage(jid, {
+                text: `✅ Found *${result.title}* — sending…`,
+                edit: wait.key
+            });
 
             await sock.sendMessage(jid, {
-                audio:    result.buffer,
-                mimetype: 'audio/mpeg',
-                fileName: `${result.title}.mp3`,
-                ptt:      false
+                video:    result.buffer,
+                mimetype: 'video/mp4',
+                caption:  `📹 *${result.title}*\n⏱ ${result.duration} · 📺 ${result.uploader}`,
             }, { quoted: msg });
-
-            // Send title as a follow-up text so user knows what they got
-            await sock.sendMessage(jid, {
-                text: `🎵 *${result.title}*\n⏱ ${result.duration} · 🎤 ${result.uploader}`
-            });
 
         } catch (err) {
             console.error('[youtube]', err.message);
-            const friendly = err.message.includes('too long')
-                ? `❌ Audio is too long (max 15 minutes).`
-                : err.message.includes('unavailable')
+            const m = err.message;
+            const friendly = m.includes('too long')
+                ? `❌ Video is too long (max 10 minutes).`
+                : m.includes('unavailable')
                 ? `❌ Video is unavailable or age-restricted.`
+                : m.includes('blocked all client')
+                ? `❌ YouTube blocked the request. Try again later.`
                 : global.mess.error;
-            await sock.sendMessage(jid, { text: friendly });
+            if (wait) await sock.sendMessage(jid, { text: friendly, edit: wait.key });
+            else await send(sock, jid, friendly);
         }
     }
 };
