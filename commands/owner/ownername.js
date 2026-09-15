@@ -1,4 +1,5 @@
 const config = require('../../config');
+const { ownerGuard } = require('../../helpers');
 
 module.exports = {
     name: 'ownername',
