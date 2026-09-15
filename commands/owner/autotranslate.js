@@ -1,7 +1,10 @@
+'use strict';
+
 const config = require('../../config');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+const { ownerGuard } = require('../../helpers');
 const DB_PATH = path.join(__dirname, '../../database/autotranslate.json');
 const load = () => { try { return JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); } catch { return {}; } };
 const save = (d) => fs.writeFileSync(DB_PATH, JSON.stringify(d, null, 2));
@@ -10,7 +13,7 @@ module.exports = {
     name: 'autotranslate',
     aliases: ['autotrans', 'autotr'],
     category: 'owner',
-    description: 'Auto-translate non-English messages in group',
+    description: 'Auto-translate messages in a group',
     usage: `${config.prefix}autotranslate <on|off> [lang]`,
     ownerOnly: true,
     async execute(sock, msg, args) {
