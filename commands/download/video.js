@@ -39,8 +39,8 @@ module.exports = {
             }, { quoted: msg });
 
         } catch (err) {
-            console.error('[video]', err.message);
-            const m = err.message;
+            console.error('[video]', err.message, err.stderr || '');
+            const m = `${err.message} ${err.stderr || ""}`;
             const friendly = m.includes('too long')
                 ? `❌ Video is too long (max 10 minutes).`
                 : m.includes('unavailable')
