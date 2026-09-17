@@ -93,13 +93,15 @@ function loadCommands() {
 
 // Shared command reference used by handlers
 const cmdRef = { commands: loadCommands() };
+global.commands = cmdRef.commands;
 console.log(chalk.green(`📦 Loaded ${cmdRef.commands.size} command entries`));
 
 fs.watch(path.join(__dirname, 'commands'), { recursive: true }, () => {
     for (const key of Object.keys(require.cache)) {
         if (key.includes(`${path.sep}commands${path.sep}`)) delete require.cache[key];
     }
-    cmdRef.commands = loadCommands();
+    cmdRef.commands  = loadCommands();
+    global.commands  = cmdRef.commands;
     console.log(chalk.yellow(`🔄 Commands reloaded (${cmdRef.commands.size} entries)`));
 });
 
