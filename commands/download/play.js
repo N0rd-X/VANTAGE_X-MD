@@ -43,8 +43,8 @@ module.exports = {
             });
 
         } catch (err) {
-            console.error('[play]', err.message);
-            const m = err.message;
+            console.error('[play]', err.message, err.stderr || '');
+            const m = `${err.message} ${err.stderr || ""}`;
             const friendly = m.includes('too long')
                 ? `❌ Audio is too long (max 15 minutes).`
                 : m.includes('unavailable')
