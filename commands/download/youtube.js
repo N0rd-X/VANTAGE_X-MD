@@ -6,7 +6,7 @@ const { ytdlp } = require('../../lib/ytdlp');
 
 module.exports = {
     name: 'youtube',
-    aliases: ['yt', 'ytdl', 'ytvideo'],
+    aliases: ['yt', 'ytv', 'ytmp4', 'ytvideo'],
     category: 'download',
     description: 'Download a YouTube video',
     weight: 'heavy',
@@ -53,8 +53,8 @@ module.exports = {
             }, { quoted: msg });
 
         } catch (err) {
-            console.error('[youtube]', err.message);
-            const m = err.message;
+            console.error('[youtube]', err.message, err.stderr || '');
+            const m = `${err.message} ${err.stderr || ""}`;
             const friendly = m.includes('too long')
                 ? `❌ Video is too long (max 10 minutes).`
                 : m.includes('unavailable')
