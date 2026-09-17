@@ -8,7 +8,7 @@ module.exports = {
     name: 'song',
     aliases: ['ytmp3', 'ytaudio', 'ytmusic'],
     category: 'download',
-    description: 'Download YouTube videos as an MP3 file',
+    description: 'Download audio as an MP3 file',
     weight: 'heavy',
     usage: `${config.prefix}song <search query or URL>`,
 
@@ -44,8 +44,8 @@ module.exports = {
             });
 
         } catch (err) {
-            console.error('[song]', err.message);
-            const m = err.message;
+            console.error('[song]', err.message, err.stderr || '');
+            const m = `${err.message} ${err.stderr || ""}`;
             const friendly = m.includes('too long')
                 ? `❌ Audio is too long (max 15 minutes).`
                 : m.includes('unavailable')
