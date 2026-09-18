@@ -6,7 +6,7 @@ const { card }               = require('../../lib/messageStyle');
 
 module.exports = {
     name: 'ping',
-    aliases: ['speed', 'latency'],
+    aliases: ['p', 'speed', 'latency'],
     category: 'system',
     description: 'Check bot response time',
     usage: `${config.prefix}ping`,
