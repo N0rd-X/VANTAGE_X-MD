@@ -3,6 +3,28 @@
 All notable changes to **VANTAGE-X MD** are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.0.3-alpha] — 20-09-2026
+
+### Added
+- `lib/ytdlp.js` — optional `YT_COOKIES_FILE` env var; set it to a Netscape-format cookies export from a logged-in YouTube session for a reliable fallback when all client strategies are blocked
+
+### Fixed
+- `apk` and `settings` now get stlyled for `lib/messageStyle.js` import
+- `ownerGuard` import was missing from 13 owner commands, was called without an import
+- `!help <command>` returned "commands not loaded yet" for all queries — `global.commands` was never assigned in `index.js`; now set on initial load and kept in sync on hot-reload
+- `!help <category>` silently routed to menu logic inside `help.js` — removed; `!menu` is the correct entry point for category browsing
+- Download commands (`youtube`, `video`, `song`, `play`, `tiktok`, `facebook`, `instagram`, `x`) — `const wait` declared inside `try` made the catch block unable to edit the wait message on failure, leaving it hanging while a separate error message was sent below it; `wait` is now declared before `try`
+- Download commands — error matching in catch only checked `err.message`, which for a failed `execFileAsync` call is a generic wrapper string; actual yt-dlp output lives in `err.stderr`, now included in both matching and logging
+- `lib/ytdlp.js` — unrecognised yt-dlp errors were surfaced immediately instead of cycling through the remaining client strategies; all non-fatal errors now exhaust the full fallback chain before surfacing
+
+### Changed
+- `!youtube` rewritten as a YouTube **video** downloader (previously downloaded audio only); alias `ytaudio` removed, `ytvideo` added; non-YouTube URLs are rejected with a redirect to `!video`
+- `!video` rewritten as a platform-agnostic video downloader; alias `ytvid` removed
+- `!song` and `!play` — error handling and wait-message flow brought in line with the rest of the download suite
+- `lib/ytdlp.js` — YouTube bot-detection strategy replaced; `ios` player client (patched by YouTube) removed in favour of a `tv_embedded → mweb → web_embedded → bare` fallback chain
+
+---
+
 ## [0.0.2-alpha] — 14-09-2026
 
 ### Added
