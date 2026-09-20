@@ -1,6 +1,7 @@
 'use strict';
-const config  = require('../../config');
-const { send } = require('../../helpers');
+
+const config    = require('../../config');
+const { send }  = require('../../helpers');
 const { ytdlp } = require('../../lib/ytdlp');
 
 module.exports = {
@@ -13,6 +14,7 @@ module.exports = {
 
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
+        let wait;
         try {
             if (!args[0]) {
                 return await send(sock, jid,
@@ -25,11 +27,14 @@ module.exports = {
                 return await send(sock, jid, '❌ Invalid Instagram URL.');
             }
 
-            const wait = await sock.sendMessage(jid, { text: '⏳ Downloading Instagram content…' });
+            wait = await sock.sendMessage(jid, { text: '⏳ Downloading Instagram content…' });
 
-            const result = await ytdlp(url, { type: 'video', format: 'mp4', maxSecs: 300 });
+            const result = await ytdlp(url, { type: 'video', maxSecs: 300 });
 
-            await sock.sendMessage(jid, { delete: wait.key });
+            await sock.sendMessage(jid, {
+                text: `✅ Found *${result.title || 'Instagram Reel'}* — sending…`,
+                edit: wait.key
+            });
 
             await sock.sendMessage(jid, {
                 video:    result.buffer,
@@ -38,13 +43,15 @@ module.exports = {
             }, { quoted: msg });
 
         } catch (err) {
-            console.error('[instagram]', err.message);
-            const friendly = err.message.includes('private') || err.message.includes('login')
+            console.error('[instagram]', err.message, err.stderr || '');
+            const m = `${err.message} ${err.stderr || ''}`;
+            const friendly = m.includes('private') || m.includes('login')
                 ? '❌ This post is private or requires login. Public reels only.'
-                : err.message.includes('too long')
+                : m.includes('too long')
                 ? '❌ Video is too long (max 5 minutes).'
                 : '❌ Failed to download. Check the URL and try again.';
-            await sock.sendMessage(jid, { text: friendly });
+            if (wait) await sock.sendMessage(jid, { text: friendly, edit: wait.key });
+            else await send(sock, jid, friendly);
         }
     }
 };

@@ -1,14 +1,13 @@
 'use strict';
 
-const config                        = require('../../config');
-const VantageMenu                   = require('../../menu');
+const config                         = require('../../config');
 const { sc, card, TOP, MID, BOT, R } = require('../../lib/messageStyle');
 
 // ── Module export ─────────────────────────────────────────────────────────────
 
 module.exports = {
     name: 'help',
-    aliases: ['h', 'cmdinfo'],
+    aliases: ['cmdinfo'],
     category: 'utility',
     description: 'Get details about a specific command',
     usage: `${config.prefix}help <command>`,
@@ -20,14 +19,12 @@ module.exports = {
             const query = args[0]?.toLowerCase().replace(/^[!./\\]/, '');
 
             if (!query) {
-                // Bare !help with no args is intercepted in messages.js before
-                // reaching here — this branch is purely a safety net
+                // Bare !help with no args is intercepted in messages.js
                 return await sock.sendMessage(jid, {
                     text: `❓ ${sc('usage')}: ${sc(this.usage)}\n\n${sc('example')}: ${sc(config.prefix + 'help sticker')}`
                 }, { quoted: msg });
             }
 
-            // global.commands is set (and kept in sync) by index.js
             const commands = global.commands;
             if (!commands?.size) {
                 return await sock.sendMessage(jid, {
@@ -50,20 +47,6 @@ module.exports = {
             }
 
             if (!found) {
-                // Check if the query is a category name and route there instead
-                const categories = new Set(
-                    [...commands.values()]
-                        .map(c => c.category?.toLowerCase())
-                        .filter(Boolean)
-                );
-
-                if (categories.has(query)) {
-                    const menu = new VantageMenu();
-                    return await sock.sendMessage(jid, {
-                        text: menu.getCategoryMenu(query)
-                    }, { quoted: msg });
-                }
-
                 return await sock.sendMessage(jid, {
                     text: [
                         TOP,
@@ -78,7 +61,7 @@ module.exports = {
                 }, { quoted: msg });
             }
 
-            // Alias hit — show card with alias note folded into the header
+            // Alias hit: show card with alias note folded into the header
             await sock.sendMessage(jid, {
                 text: buildInfo(found, config.prefix, query)
             }, { quoted: msg });

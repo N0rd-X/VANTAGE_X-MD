@@ -6,9 +6,9 @@
 
 **Fast. Smart. Yours.**
 
-[![Version](https://img.shields.io/badge/version-0.0.2--alpha-blue.svg)](https://github.com/N0rd-X/VANTAGE_X-MD/releases)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/node-20.x-brightgreen.svg)](https://nodejs.org)
+[![Version](https://img.shields.io/badge/version-0.0.3--alpha-blue.svg)](https://github.com/N0rd-X/VANTAGE_X-MD/releases)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-20.x-blue.svg)](https://nodejs.org)
 [![Stars](https://img.shields.io/github/stars/N0rd-X/VANTAGE_X-MD?style=social)](https://github.com/N0rd-X/VANTAGE_X-MD/stargazers)
 
 </div>
@@ -21,16 +21,16 @@
 
 <div align="center">
 <a href="https://github.com/N0rd-X/VANTAGE_X-MD/fork">
-  <img src="https://img.shields.io/badge/Fork-VANTAGE--X%20MD-00D9FF?style=for-the-badge&logo=github&logoColor=white">
+  <img src="https://img.shields.io/badge/Fork-VANTAGE--X%20MD-0879BA?style=for-the-badge&logo=github&logoColor=white">
 </a>
 </div>
 
 **2. Get a Session ID** — pair your WhatsApp at the link below. The Session ID arrives via WhatsApp message, never through the browser.
 
 <div align="center">
-<a href="https://vantagex-pairing.onrender.com/">
-  <img src="https://img.shields.io/badge/Pair%20Device-25D366?style=for-the-badge&logo=whatsapp&logoColor=white">
-</a>
+  <a href="https://vantagex-pairing.onrender.com/">
+    <img src="https://img.shields.io/badge/🔑_GET_SESSION-0879BA?style=for-the-badge&logo=key&logoColor=white&labelColor=000000"/>
+  </a>
 </div>
 
 **3. Configure and run**
@@ -55,8 +55,8 @@ Full setup instructions → [INSTALL.md](INSTALL.md)
 |---|---|
 | Railway | [![Railway](https://img.shields.io/badge/Railway-000000?style=for-the-badge&logo=railway&logoColor=white)](https://railway.app/new/template?template=https://github.com/N0rd-X/VANTAGE_X-MD) |
 | Render | [![Render](https://img.shields.io/badge/Render-000000?style=for-the-badge&logo=render&logoColor=white)](https://dashboard.render.com/select-repo?type=web) |
-| Koyeb | [![Koyeb](https://img.shields.io/badge/Koyeb-FF009D?style=for-the-badge&logo=koyeb&logoColor=white)](https://app.koyeb.com/services/deploy?type=git&repository=N0rd-X/VANTAGE_X-MD) |
-| Heroku | [![Heroku](https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white)](https://dashboard.heroku.com/new?template=https://github.com/N0rd-X/VANTAGE_X-MD) |
+| Koyeb | [![Koyeb](https://img.shields.io/badge/Koyeb-000000?style=for-the-badge&logo=koyeb&logoColor=white)](https://app.koyeb.com/services/deploy?type=git&repository=N0rd-X/VANTAGE_X-MD) |
+| Heroku | [![Heroku](https://img.shields.io/badge/Heroku-000000?style=for-the-badge&logo=heroku&logoColor=white)](https://dashboard.heroku.com/new?template=https://github.com/N0rd-X/VANTAGE_X-MD) |
 
 </div>
 
@@ -87,7 +87,6 @@ Full command reference → [COMMANDS.md](COMMANDS.md)
 
 [![WhatsApp Channel](https://img.shields.io/badge/WhatsApp%20Channel-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://whatsapp.com/channel/0029VbE0dNM0rGiHzZ5KEY2i)
 [![Support Group](https://img.shields.io/badge/Support%20Group-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/PLACEHOLDER)
-[![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/N0rd_X)
 
 </div>
 
@@ -111,6 +110,7 @@ Full command reference → [COMMANDS.md](COMMANDS.md)
 
 - [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys) — The WhatsApp library this project is built on
 - Nord-X — Development and maintenance
+- [Madara X-MD Inc.](https://youtube.com/@madaradevxinc)— Promotion, media, and tutorials
 - Community — Every star, fork, and contribution ❤️
 
 ---
@@ -118,6 +118,10 @@ Full command reference → [COMMANDS.md](COMMANDS.md)
 ## License
 
 MIT — free to use, modify, and distribute. See [LICENSE](LICENSE).
+
+## Disclaimer
+
+VANTAGE-X MD is an independent, community-built project. It is **not affiliated with, endorsed by, or associated with Meta Platforms, Inc. or WhatsApp LLC** in any way. WhatsApp is a trademark of Meta Platforms, Inc. Use of this software is at your own risk and responsibility.
 
 ---
 

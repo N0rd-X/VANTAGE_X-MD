@@ -1,6 +1,9 @@
+'use strict';
+
 const config = require('../../config');
 const fs = require('fs').promises;
 const path = require('path');
+const { ownerGuard } = require('../../helpers');
 
 module.exports = {
     name: 'cleanup',
