@@ -25,10 +25,18 @@ if (!_startupOwner) {
 function isOwner(sender) {
     if (!sender) return false;
 
-    const num     = normalise(sender);
-    const primary = normalise(config.ownernumber || process.env.OWNER_NUMBER || '');
+    const num = normalise(sender);
 
-    if (primary && num === primary) return true;
+    // Check every possible source the owner number could live in
+    const settings   = readDb('settings.json', {});
+    const candidates = [
+        config.ownernumber,
+        global.ownernumber,
+        settings.ownernumber,
+        process.env.OWNER_NUMBER,
+    ].filter(Boolean).map(normalise);
+
+    if (candidates.some(c => c === num)) return true;
 
     // Additional owners from database/owner.json
     const extras = readDb('owner.json', []);
@@ -49,8 +57,10 @@ async function run(commands, cmdName, sock, msg, args, sender) {
     if (cmd.ownerOnly) {
         const fromMe = msg.key.fromMe;
         if (!fromMe && !isOwner(sender)) {
-            const _ow = normalise(config.ownernumber || process.env.OWNER_NUMBER || '');
-            console.warn(`[AUTH] Denied "${cmdName}" — sender: ${normalise(sender)} | owner: ${_ow}`);
+            const settings    = readDb('settings.json', {});
+            const _candidates = [config.ownernumber, global.ownernumber, settings.ownernumber, process.env.OWNER_NUMBER]
+                .filter(Boolean).map(normalise).join(' / ');
+            console.warn(`[AUTH] Denied "${cmdName}" — sender: ${normalise(sender)} | configured owner(s): ${_candidates || '(none)'}`);
             await sock.sendMessage(jid, {
                 text: global.mess?.owner ?? '⛔ This command is restricted to the bot owner.'
             }, { quoted: msg }).catch(() => {});
