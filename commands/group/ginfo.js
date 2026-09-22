@@ -28,9 +28,9 @@ module.exports = {
             const adminList     = admins.map(p => `@${p.id.split('@')[0]}`).join(', ') || 'None';
 
             const infoLines = [
-                `📛 *${sc('name')}:*    ${meta.subject}`,
+                `📛 *${sc('name')}:* ${meta.subject}`,
                 `📅 *${sc('created')}:* ${created}`,
-                `🔗 *${sc('gid')}:*     ...${jid.split('@')[0].slice(-6)}`,
+                `🔗 *${sc('gid')}:* ...${jid.split('@')[0].slice(-6)}`,
                 ...(meta.ephemeralDuration
                     ? [`⏳ *${sc('ephemeral')}:* ${meta.ephemeralDuration / 86400}d`]
                     : []),
@@ -41,7 +41,7 @@ module.exports = {
 
             const statsLines = [
                 `👥 *${sc('members')}:* ${total}`,
-                `👑 *${sc('admins')}:*  ${admins.length}`,
+                `👑 *${sc('admins')}:* ${admins.length}`,
                 `👤 *${sc('regular')}:* ${regular}`,
             ];
 
