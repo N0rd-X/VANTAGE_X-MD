@@ -11,7 +11,7 @@ const REPO_URL   = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
 
 module.exports = {
     name: 'repo',
-    aliases: ['repository', 'source', 'github'],
+    aliases: ['repository', 'source'],
     category: 'system',
     description: 'Show repository details, live project statistics and resources',
     usage: `${config.prefix}repo`,
