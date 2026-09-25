@@ -95,7 +95,7 @@ module.exports = {
 
         } catch (err) {
             console.error('[repo]', err.message);
-            if (wait) await sock.sendMessage(jid, { text: global.messrepositdedit: wait.keylic;
+            if (wait) await sock.sendMessage(jid, { text: global.mess.error, edit: wait.key });
             else await send(sock, jid, global.mess.error);
         }
     }
