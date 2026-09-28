@@ -24,8 +24,8 @@ module.exports = {
             await sock.sendMessage(jid, {
                 text: card('🏓【 ᴘᴏɴɢ 】', [
                     `⚡ *Latency:* ${ms}ms`,
-                    `📶 *Signal:*  ${bar}`,
-                    `📊 *Grade:*   ${grade}`,
+                    `📶 *Signal:* ${bar}`,
+                    `📊 *Grade:* ${grade}`,
                 ]),
                 edit: sent.key,
             });

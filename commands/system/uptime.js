@@ -29,11 +29,11 @@ module.exports = {
 
             await sock.sendMessage(jid, {
                 text: card('⏱️【 ʀᴜɴᴛɪᴍᴇ 】', [
-                    `🕐 *Uptime:*  ${d}d ${h}h ${m}m ${s}s`,
-                    `💾 *Memory:*  ${memMB} MB`,
-                    `📟 *Load:*    ${loadAvg}`,
-                    `⚙️ *Node:*    ${process.version}`,
-                    `🏷️ *Build:*   v${config.version}`,
+                    `🕐 *Uptime:* ${d}d ${h}h ${m}m ${s}s`,
+                    `💾 *Memory:* ${memMB} MB`,
+                    `📟 *Load:* ${loadAvg}`,
+                    `⚙️ *Node:* ${process.version}`,
+                    `🏷️ *Build:* v${config.version}`,
                 ]),
             }, { quoted: msg });
 

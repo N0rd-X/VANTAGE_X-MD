@@ -3,7 +3,6 @@
 const config = require('../../config');
 const fs = require('fs');
 const path = require('path');
-const { ownerGuard } = require('../../helpers');
 const DB_PATH = path.join(__dirname, '../../database/autoreply.json');
 
 function loadDB() {
@@ -25,8 +24,6 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            if (await ownerGuard(sock, msg)) return;
-            
             const action = args[0]?.toLowerCase();
             const db = loadDB();
             

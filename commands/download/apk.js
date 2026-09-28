@@ -61,11 +61,11 @@ module.exports = {
                 caption: card(
                     `📦【 ${sc('apk download')} 】`,
                     [
-                        `📦 ${sc('name')}:      ${app.name}`,
-                        `🏋 ${sc('size')}:      ${sizeMB} MB`,
-                        `📦 ${sc('package')}:   ${pkg}`,
+                        `📦 ${sc('name')}: ${app.name}`,
+                        `🏋 ${sc('size')}: ${sizeMB} MB`,
+                        `📦 ${sc('package')}: ${pkg}`,
                         `👨‍💻 ${sc('developer')}: ${dev}`,
-                        `⭐ ${sc('rating')}:   ${rating}`,
+                        `⭐ ${sc('rating')}: ${rating}`,
                     ]
                 )
             }, { quoted: msg });

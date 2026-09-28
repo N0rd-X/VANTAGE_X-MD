@@ -26,12 +26,12 @@ module.exports = {
 
             const text =
                 card('⚡【 ᴠᴀɴᴛᴀɢᴇ-x ɪs ᴀʟɪᴠᴇ 】', [
-                    `👑 *Owner:*   ${config.ownername}`,
+                    `👑 *Owner:* ${config.ownername}`,
                     `🏷️ *Version:* v${config.version}`,
-                    `⏱️ *Uptime:*  ${d}d ${h}h ${m}m`,
-                    `💾 *Memory:*  ${usedMem}MB / ${totalMem}MB`,
-                    `⚙️ *Node:*    ${process.version}`,
-                    `🔣 *Prefix:*  ${config.prefix}`,
+                    `⏱️ *Uptime:* ${d}d ${h}h ${m}m`,
+                    `💾 *Memory:* ${usedMem}MB / ${totalMem}MB`,
+                    `⚙️ *Node:* ${process.version}`,
+                    `🔣 *Prefix:* ${config.prefix}`,
                 ]) + `\n\n> ᴛʏᴘᴇ ${config.prefix}ᴍᴇɴᴜ ꜰᴏʀ ᴄᴏᴍᴍᴀɴᴅs`;
 
             await sock.sendMessage(jid, { text }, { quoted: msg });

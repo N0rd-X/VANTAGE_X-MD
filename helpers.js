@@ -55,26 +55,6 @@ function send(sock, jid, text, extra = {}) {
     return sock.sendMessage(jid, { text, ...extra });
 }
 
-// ─── Owner utilities ──────────────────────────────────────────────────────────
-
-async function ownerGuard(sock, msg) {
-    const jid    = msg.key.remoteJid;
-    const fromMe = msg.key.fromMe;
-
-    // fromMe = the bot's own device is unconditionally trusted
-    if (fromMe) return false;
-
-    const sender = _decodeJid(msg.key.participant || msg.key.remoteJid);
-
-    const { isOwner } = require('./services/commands');
-    if (!isOwner(sender)) {
-        console.warn(`[AUTH] ownerGuard blocked — sender: ${sender}`);
-        await send(sock, jid, global.mess?.owner ?? '⛔ Owner only.');
-        return true;   // blocked
-    }
-    return false;      // allowed
-}
-
 // ─── Database factory ─────────────────────────────────────────────────────────
 
 function makeDB(filename, defaults = {}) {
