@@ -4,7 +4,6 @@ const config = require('../../config');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-const { ownerGuard } = require('../../helpers');
 const DB_PATH = path.join(__dirname, '../../database/autotranslate.json');
 const load = () => { try { return JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); } catch { return {}; } };
 const save = (d) => fs.writeFileSync(DB_PATH, JSON.stringify(d, null, 2));
@@ -19,7 +18,6 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            if (await ownerGuard(sock, msg)) return;
             const action = args[0]?.toLowerCase();
             const db = load();
             if (!db[jid]) db[jid] = { enabled: false, to: 'en' };
