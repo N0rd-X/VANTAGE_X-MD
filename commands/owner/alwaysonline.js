@@ -1,7 +1,6 @@
 'use strict';
 
 const config         = require('../../config');
-const { ownerGuard } = require('../../helpers');
 
 module.exports = {
     name: 'alwaysonline',
@@ -15,8 +14,6 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            if (await ownerGuard(sock, msg)) return;
-            
             const action = args[0]?.toLowerCase();
             if (action === 'on') {
                 await sock.sendPresenceUpdate('available', jid);
