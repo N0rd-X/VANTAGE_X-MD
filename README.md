@@ -6,7 +6,7 @@
 
 **Fast. Smart. Yours.**
 
-[![Version](https://img.shields.io/badge/version-0.0.3--alpha-blue.svg)](https://github.com/N0rd-X/VANTAGE_X-MD/releases)
+[![Version](https://img.shields.io/badge/version-0.1.0--beta-blue.svg)](https://github.com/N0rd-X/VANTAGE_X-MD/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-20.x-blue.svg)](https://nodejs.org)
 [![Stars](https://img.shields.io/github/stars/N0rd-X/VANTAGE_X-MD?style=social)](https://github.com/N0rd-X/VANTAGE_X-MD/stargazers)
