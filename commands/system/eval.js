@@ -2,7 +2,7 @@
 
 const config               = require('../../config');
 const util                 = require('util');
-const { send, ownerGuard } = require('../../helpers');
+const { send } = require('../../helpers');
 
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
 
@@ -16,10 +16,6 @@ module.exports = {
 
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
-
-        // Defense in depth
-        // eval is the highest-risk command in the entire bot
-        if (await ownerGuard(sock, msg)) return;
 
         if (!args.length) return send(sock, jid, `❌ Usage: ${this.usage}`);
 

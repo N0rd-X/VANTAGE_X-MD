@@ -1,7 +1,7 @@
 'use strict';
 
 const config               = require('../../config');
-const { send, ownerGuard } = require('../../helpers');
+const { send } = require('../../helpers');
 
 module.exports = {
     name:        'shutdown',
@@ -13,7 +13,6 @@ module.exports = {
 
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
-        if (await ownerGuard(sock, msg)) return;
 
         await sock.sendMessage(jid, {
             text: '⬡ ᴠx-sʏs — shutting down\n▸ Process terminating. Restart manually when ready.',
