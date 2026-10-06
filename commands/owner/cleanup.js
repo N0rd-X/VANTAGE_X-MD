@@ -3,7 +3,6 @@
 const config = require('../../config');
 const fs = require('fs').promises;
 const path = require('path');
-const { ownerGuard } = require('../../helpers');
 
 module.exports = {
     name: 'cleanup',
@@ -16,7 +15,6 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            if (await ownerGuard(sock, msg)) return;
             
             await sock.sendMessage(jid, { text: '🧹 Cleaning up temp files...' });
             

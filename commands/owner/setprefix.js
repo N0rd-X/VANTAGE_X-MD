@@ -1,6 +1,7 @@
 'use strict';
+
 const config = require('../../config');
-const { send, ownerGuard, makeDB } = require('../../helpers');
+const { send, makeDB } = require('../../helpers');
 
 const db = makeDB('settings', {});
 
@@ -15,7 +16,6 @@ module.exports = {
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
         try {
-            if (await ownerGuard(sock, msg)) return;
             if (!args[0]) return send(sock, jid, `❌ Usage: ${this.usage}`);
 
             const newPrefix = args[0];

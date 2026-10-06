@@ -1,6 +1,6 @@
 'use strict';
 const config = require('../../config');
-const { send, ownerGuard } = require('../../helpers');
+const { send } = require('../../helpers');
 
 module.exports = {
     name: 'setdesc',
@@ -13,7 +13,6 @@ module.exports = {
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
         try {
-            if (await ownerGuard(sock, msg)) return;
             if (!jid.endsWith('@g.us')) return send(sock, jid, global.mess.group);
             if (!args.length) return send(sock, jid, `❌ Usage: ${this.usage}`);
 

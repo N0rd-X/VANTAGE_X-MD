@@ -1,7 +1,7 @@
 'use strict';
 const config = require('../../config');
 const { downloadMediaMessage } = require('@whiskeysockets/baileys');
-const { send, ownerGuard, getQuotedImage } = require('../../helpers');
+const { send, getQuotedImage } = require('../../helpers');
 
 module.exports = {
     name: 'setdp',
@@ -14,8 +14,6 @@ module.exports = {
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
         try {
-            if (await ownerGuard(sock, msg)) return;
-
             const quoted = getQuotedImage(msg);
             if (!quoted) return send(sock, jid, `❌ Reply to an image with ${config.prefix}setdp`);
 

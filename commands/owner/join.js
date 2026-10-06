@@ -1,7 +1,6 @@
 'use strict';
 
 const config         = require('../../config');
-const { ownerGuard } = require('../../helpers');
 
 module.exports = {
     name: 'join',
@@ -14,7 +13,6 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            if (await ownerGuard(sock, msg)) return;
             if (!args[0]) return await sock.sendMessage(jid, { text: `❌ Usage: ${this.usage}` });
             
             const link = args[0];

@@ -3,7 +3,7 @@ const config = require('../../config');
 const { downloadMediaMessage } = require('@whiskeysockets/baileys');
 const fs   = require('fs').promises;
 const path = require('path');
-const { send, ownerGuard, getQuotedImage } = require('../../helpers');
+const { send, getQuotedImage } = require('../../helpers');
 
 const MENU_IMG_PATH = path.join(__dirname, '../../VantageXMedia/thumb.jpg');
 
@@ -18,8 +18,6 @@ module.exports = {
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
         try {
-            if (await ownerGuard(sock, msg)) return;
-
             const quoted = getQuotedImage(msg);
             if (!quoted) return send(sock, jid, `❌ Reply to an image with ${config.prefix}setmenuimg`);
 

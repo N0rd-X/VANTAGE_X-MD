@@ -1,7 +1,6 @@
 'use strict';
 
 const config         = require('../../config');
-const { ownerGuard } = require('../../helpers');
 
 module.exports = {
     name: 'invite',
@@ -14,7 +13,6 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            if (await ownerGuard(sock, msg)) return;
             if (!jid.endsWith('@g.us')) return await sock.sendMessage(jid, { text: '❌ For groups only.' });
             
             const code = await sock.groupInviteCode(jid);

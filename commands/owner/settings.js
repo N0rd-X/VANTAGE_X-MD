@@ -2,7 +2,7 @@
 
 const config                   = require('../../config');
 const { readDb }               = require('../../lib/db');
-const { send, ownerGuard }     = require('../../helpers');
+const { send }     = require('../../helpers');
 const { sc, TOP, MID, BOT, R } = require('../../lib/messageStyle');
 
 module.exports = {
@@ -16,8 +16,6 @@ module.exports = {
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
         try {
-            if (await ownerGuard(sock, msg)) return;
-
             // ── Read live values from settings.json, fall back to globals ─────
             const db = readDb('settings.json', {});
 
