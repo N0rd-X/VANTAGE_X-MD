@@ -1,6 +1,7 @@
 'use strict';
+
 const config = require('../../config');
-const { send, ownerGuard, getTarget } = require('../../helpers');
+const { send, getTarget } = require('../../helpers');
 
 module.exports = {
     name: 'unblock',
@@ -13,7 +14,6 @@ module.exports = {
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
         try {
-            if (await ownerGuard(sock, msg)) return;
             const target = getTarget(msg, args);
             if (!target) return send(sock, jid, `❌ Usage: ${this.usage}`);
 

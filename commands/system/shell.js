@@ -3,7 +3,7 @@
 const config               = require('../../config');
 const { exec }             = require('child_process');
 const { promisify }        = require('util');
-const { send, ownerGuard } = require('../../helpers');
+const { send } = require('../../helpers');
 
 const execAsync = promisify(exec);
 
@@ -17,7 +17,6 @@ module.exports = {
 
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
-        if (await ownerGuard(sock, msg)) return;
 
         if (!args[0]) return send(sock, jid, `❌ Usage: ${this.usage}`);
 

@@ -206,6 +206,6 @@ function smsg(conn, m) {
 }
 
 module.exports = {
-    getGroupContext, getTarget, send, ownerGuard, makeDB,
+    getGroupContext, getTarget, send, makeDB,
     getQuotedImage, getQuotedMedia, tooLarge, smsg,
 };

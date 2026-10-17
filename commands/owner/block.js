@@ -1,7 +1,7 @@
 'use strict';
 
 const config = require('../../config');
-const { ownerGuard, getTarget } = require('../../helpers');
+const { getTarget } = require('../../helpers');
 
 module.exports = {
     name: 'block',
@@ -14,8 +14,6 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            if (await ownerGuard(sock, msg)) return;
-
             const mentioned = msg.message?.extendedTextMessage?.contextInfo?.mentionedJid;
             const target = mentioned?.[0] || (args[0]?.replace(/[^0-9]/g, '') + '@s.whatsapp.net');
 
