@@ -1,7 +1,7 @@
 'use strict';
 
-const config     = require('../config');
-const { readDb } = require('../lib/db');
+const config              = require('../config');
+const { readDb, writeDb } = require('../lib/db');
 
 // ── Concurrency semaphore ────────────────────────────────────────────────────
 
@@ -13,41 +13,72 @@ const BUSY_MESSAGE =
 
 // ── Owner check ───────────────────────────────────────────────────────────────
 
-const normalise = (v) => String(v || '').replace(/^\+/, '').replace(/@.+$/, '').replace(/:\d+$/, '');
+// Reduce any JID/phone string to bare digits, so every device of one account normalises equally
+const normalise = (v) => {
+    let s = String(v || '');
+    if (s.includes('@')) s = s.replace(/@.+$/, '').replace(/_\d+$/, '');
+    return s.replace(/:\d+$/, '').replace(/\D/g, '');
+};
+
+const isLid = (id) => String(id || '').endsWith('@lid');
 
 const _startupOwner = normalise(config.ownernumber || process.env.OWNER_NUMBER || '');
 if (!_startupOwner) {
-    console.warn('[AUTH] ⚠️  No owner number configured — set OWNER_NUMBER in .env / environment variables');
+    console.warn('[AUTH] ⚠️  No owner number configured — will fallback to default owner');
 } else {
     console.log('[AUTH] Owner number loaded:', _startupOwner);
 }
 
-function isOwner(sender) {
-    if (!sender) return false;
+// Owner phone numbers (primary) and auto-learned owner LIDs (fallback).
+function ownerSets() {
+    const settings = readDb('settings.json', {});
+    const extras   = readDb('owner.json', []);
 
-    const num = normalise(sender);
-
-    // Check every possible source the owner number could live in
-    const settings   = readDb('settings.json', {});
-    const candidates = [
+    const numbers = new Set([
         config.ownernumber,
         global.ownernumber,
         settings.ownernumber,
         process.env.OWNER_NUMBER,
-    ].filter(Boolean).map(normalise);
+        ...(Array.isArray(extras) ? extras : []),
+    ].filter(Boolean).map(normalise).filter(Boolean));
 
-    if (candidates.some(c => c === num)) return true;
+    const lids = new Set((Array.isArray(settings.ownerlids) ? settings.ownerlids : []).map(normalise).filter(Boolean));
+    return { numbers, lids };
+}
 
-    // Additional owners from database/owner.json
-    const extras = readDb('owner.json', []);
-    if (Array.isArray(extras) && extras.some(o => normalise(o) === num)) return true;
+const matchesNumber = (ids, numbers) => ids.some(id => !isLid(id) && numbers.has(normalise(id)));
 
-    return false;
+function isOwner(...ids) {
+    const flat = ids.flat().filter(Boolean);
+    const { numbers, lids } = ownerSets();
+
+    if (matchesNumber(flat, numbers)) return true;
+    return flat.some(id => isLid(id) && lids.has(normalise(id)));
+}
+
+function learnOwnerLid(...ids) {
+    const flat = ids.flat().filter(Boolean);
+    const lid  = flat.find(isLid);
+    if (!lid) return;
+
+    const { numbers, lids } = ownerSets();
+    if (!matchesNumber(flat, numbers)) return;
+
+    const digits = normalise(lid);
+    if (!digits || lids.has(digits)) return;
+
+    try {
+        const settings = readDb('settings.json', {});
+        writeDb('settings.json', { ...settings, ownerlids: [...lids, digits] });
+        console.log('[AUTH] Owner LID learned and saved.');
+    } catch (err) {
+        console.error('[AUTH] Could not save owner LID:', err.message);
+    }
 }
 
 // ── Dispatch ──────────────────────────────────────────────────────────────────
 
-async function run(commands, cmdName, sock, msg, args, sender) {
+async function run(commands, cmdName, sock, msg, args, sender, ids) {
     const cmd = commands.get(cmdName);
     if (!cmd) return;
 
@@ -56,11 +87,10 @@ async function run(commands, cmdName, sock, msg, args, sender) {
     // ── Owner-only guard ──────────────────────────────────────────────────────
     if (cmd.ownerOnly) {
         const fromMe = msg.key.fromMe;
-        if (!fromMe && !isOwner(sender)) {
-            const settings    = readDb('settings.json', {});
-            const _candidates = [config.ownernumber, global.ownernumber, settings.ownernumber, process.env.OWNER_NUMBER]
-                .filter(Boolean).map(normalise).join(' / ');
-            console.warn(`[AUTH] Denied "${cmdName}" — sender: ${normalise(sender)} | configured owner(s): ${_candidates || '(none)'}`);
+        if (!fromMe && !isOwner(...(ids && ids.length ? ids : [sender]))) {
+            const tried = (ids && ids.length ? ids : [sender]).map(normalise).filter(Boolean).join(', ');
+            console.warn(`[AUTH] Denied "${cmdName}" — sender id(s): ${tried || '(none)'} | ` +
+                        `configured owner(s): ${[...ownerSets().numbers].join(' / ') || '(none)'}`);
             await sock.sendMessage(jid, {
                 text: global.mess?.owner ?? '⛔ This command is restricted to the bot owner.'
             }, { quoted: msg }).catch(() => {});
@@ -90,4 +120,4 @@ async function run(commands, cmdName, sock, msg, args, sender) {
     }
 }
 
-module.exports = { isOwner, run };
+module.exports = { isOwner, learnOwnerLid, run };
