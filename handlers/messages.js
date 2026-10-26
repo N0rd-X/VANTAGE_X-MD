@@ -1,8 +1,8 @@
 'use strict';
 
-const { smsg }    = require('../helpers');
-const { readDb }  = require('../lib/db');
-const { isOwner, learnOwnerLid, run: runCommand } = require('../services/commands');
+const { smsg }   = require('../helpers');
+const { readDb } = require('../lib/db');
+const { isOwner, learnOwnerLid, getMode, modeAllows, run: runCommand } = require('../services/commands');
 const chatbot     = require('../services/chatbot');
 const antilink    = require('../services/antilink');
 const auto        = require('./auto');
@@ -105,6 +105,15 @@ function attach(sock, cmdRef) {
                 } catch { /* bot may not be admin — silently skip */ }
                 return;
             }
+        }
+
+        // Group moderation above keeps working in every mode, but command execution is restricted
+        const mode = getMode();
+        if (!modeAllows(mode, { isGroup, isOwner: ownerFlag || fromMe })) {
+            if (process.env.DEBUG_MSGS === 'true' && (isCmd || !fromMe)) {
+                console.log(`[DEBUG] ignored by mode "${mode}" (isGroup=${isGroup}, owner=${ownerFlag || fromMe})`);
+            }
+            return;
         }
 
         // ── 5. Chatbot ────────────────────────────────────────────────────────
