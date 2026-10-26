@@ -1,16 +1,36 @@
 'use strict';
 
-const { smsg }   = require('../helpers');
-const { readDb } = require('../lib/db');
-const { isOwner, run: runCommand } = require('../services/commands');
+const { smsg }    = require('../helpers');
+const { readDb }  = require('../lib/db');
+const { isOwner, learnOwnerLid, run: runCommand } = require('../services/commands');
 const chatbot     = require('../services/chatbot');
 const antilink    = require('../services/antilink');
 const auto        = require('./auto');
 const { handleOwnerProtection } = require('./ownerMentions');
 const VantageMenu = require('../menu');
+const lidToPn = new Map();
+
+// Work out who really sent the message. WhatsApp may identify people by LID
+function resolveSender(sock, key, chatJid, fromMe) {
+    if (fromMe) return sock.decodeJid(sock.user.id);
+
+    let raw = key.participant
+        ? (key.participantPn || key.participant)
+        : (key.senderPn      || chatJid);
+
+    if (typeof raw === 'string' && raw.endsWith('@lid') && lidToPn.has(raw)) raw = lidToPn.get(raw);
+    return sock.decodeJid(raw);
+}
 
 function attach(sock, cmdRef) {
+    sock.ev.on('chats.phoneNumberShare', ({ lid, jid }) => {
+        if (lid && jid) lidToPn.set(lid, jid);
+    });
+
     sock.ev.on('messages.upsert', async ({ messages, type }) => {
+        if (process.env.DEBUG_MSGS === 'true') {
+            console.log(`[DEBUG] upsert type=${type} count=${messages.length}`);
+        }
         if (type !== 'notify') return;
 
         const rawMsg = messages[0];
@@ -29,9 +49,18 @@ function attach(sock, cmdRef) {
         if (!jid) return;
 
         const fromMe    = m.key.fromMe;
-        const sender    = sock.decodeJid(fromMe ? sock.user.id : (m.key.participant || jid));
+        const sender    = resolveSender(sock, m.key, jid, fromMe);
         const isGroup   = jid.endsWith('@g.us');
-        const ownerFlag = isOwner(sender);
+
+        // Every identity we have for this sender: phone JIDs first, LIDs as fallback.
+        const senderIds = [
+            sender, m.key.participantPn, m.key.senderPn,
+            m.key.participant, m.key.participantLid, m.key.senderLid,
+            fromMe ? sock.user?.lid : (!isGroup && jid),
+        ].filter(Boolean);
+
+        learnOwnerLid(senderIds);
+        const ownerFlag = isOwner(...senderIds);
 
         const body =
             m.message?.conversation ||
@@ -45,6 +74,12 @@ function attach(sock, cmdRef) {
         const cmdName = isCmd ? body.slice(prefix.length).trim().split(/\s+/)[0].toLowerCase() : '';
         const args    = isCmd ? body.slice(prefix.length).trim().split(/\s+/).slice(1) : [];
 
+        if (process.env.DEBUG_MSGS === 'true') {
+            console.log(`[DEBUG] from=${sender} ids=${senderIds.join('|')} owner=${ownerFlag} fromMe=${fromMe} prefix=${JSON.stringify(prefix)} ` +
+                        `body=${JSON.stringify(body.slice(0, 60))} isCmd=${isCmd} cmd=${cmdName || '-'} ` +
+                        `registered=${cmdName ? cmdRef.commands.has(cmdName) : '-'}`);
+        }
+
         // ── 2. Auto features ──────────────────────────────────────────────────
 
         await auto.runMessageAutos(sock, jid, m.key, isCmd, fromMe);
@@ -57,10 +92,6 @@ function attach(sock, cmdRef) {
         }
 
         // ── 4. Guards ─────────────────────────────────────────────────────────
-
-        if (global.anti92 && !fromMe) {
-            if (sender.replace(/[^0-9]/g, '').startsWith('92')) return;
-        }
 
         if (isGroup && !fromMe) {
             const blocked = await antilink.check(sock, jid, sender, body, m.key, ownerFlag);
@@ -109,7 +140,7 @@ function attach(sock, cmdRef) {
 
         // ── 7. External command router ────────────────────────────────────────
 
-        await runCommand(cmdRef.commands, cmdName, sock, rawMsg, args, sender);
+        await runCommand(cmdRef.commands, cmdName, sock, rawMsg, args, sender, senderIds);
     });
 }
 
