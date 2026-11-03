@@ -5,7 +5,7 @@ module.exports = {
     aliases: ['emojimix', 'mixemoji'],
     category: 'converter',
     description: 'Mix two emojis',
-    weight: 'heavy'
+    weight: 'heavy',
     usage: `${config.prefix}emix <emoji1> <emoji2>`,
     
     async execute(sock, msg, args) {

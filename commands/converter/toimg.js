@@ -6,7 +6,7 @@ module.exports = {
     aliases: ['stickertoimg', 'unpack', 'unsticker'],
     category: 'converter',
     description: 'Convert a sticker to an image',
-    weight: 'heavy'
+    weight: 'heavy',
     usage: `${config.prefix}toimg (reply to a sticker)`,
 
     async execute(sock, msg, args) {

@@ -8,7 +8,7 @@ const execPromise = promisify(exec);
 
 module.exports = {
     name: 'totext',
-    aliases: ['ocr', 'img2txt'],
+    aliases: ['img2txt'],
     category: 'converter',
     description: 'Extract text from image using OCR',
     weight: 'heavy',
