@@ -1,9 +1,11 @@
+'use strict';
+
 const config = require('../../config');
 const axios = require('axios');
 
 module.exports = {
     name: 'ttsearch',
-    aliases: ['tiktoksearch', 'tts'],
+    aliases: ['tiktoksearch'],
     category: 'search',
     description: 'Search TikTok videos',
     usage: `${config.prefix}ttsearch <query>`,
