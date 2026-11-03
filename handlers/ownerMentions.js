@@ -2,7 +2,7 @@
 
 const config = require('../config');
 
-async function handleMentions(sock, msg) {
+async function handleOwnerMentions(sock, msg) {
     try {
         const jid    = msg.key.remoteJid;
         const sender = msg.key.participant || msg.key.remoteJid;
