@@ -6,7 +6,7 @@ const { isOwner, learnOwnerLid, getMode, modeAllows, run: runCommand } = require
 const chatbot     = require('../services/chatbot');
 const antilink    = require('../services/antilink');
 const auto        = require('./auto');
-const { handleOwnerProtection } = require('./ownerMentions');
+const { handleOwnerMentions } = require('./ownerMentions');
 const VantageMenu = require('../menu');
 const lidToPn = new Map();
 
@@ -27,14 +27,10 @@ function attach(sock, cmdRef) {
         if (lid && jid) lidToPn.set(lid, jid);
     });
 
-    sock.ev.on('messages.upsert', async ({ messages, type }) => {
-        if (process.env.DEBUG_MSGS === 'true') {
-            console.log(`[DEBUG] upsert type=${type} count=${messages.length}`);
-        }
-        if (type !== 'notify') return;
-
-        const rawMsg = messages[0];
+    const processMessage = async (rawMsg) => {
         if (!rawMsg?.message) return;
+        // Statuses have their own listeners (auto.js)
+        if (rawMsg.key?.remoteJid === 'status@broadcast') return;
 
         if (Object.keys(rawMsg.message)[0] === 'ephemeralMessage') {
             rawMsg.message = rawMsg.message.ephemeralMessage.message;
@@ -87,7 +83,7 @@ function attach(sock, cmdRef) {
         // ── 3. Owner-tag protection ───────────────────────────────────────────
 
         if (!fromMe) {
-            const ownerTagged = await handleOwnerProtection(sock, rawMsg);
+            const ownerTagged = await handleOwnerMentions(sock, rawMsg);
             if (ownerTagged) return;
         }
 
@@ -150,6 +146,19 @@ function attach(sock, cmdRef) {
         // ── 7. External command router ────────────────────────────────────────
 
         await runCommand(cmdRef.commands, cmdName, sock, rawMsg, args, sender, senderIds);
+    };
+
+    sock.ev.on('messages.upsert', async ({ messages, type }) => {
+        if (process.env.DEBUG_MSGS === 'true') {
+            console.log(`[DEBUG] upsert type=${type} count=${messages.length}`);
+        }
+        if (type !== 'notify') return;
+
+        // Previously only messages[0] was handled, silently dropping the rest of a batch.
+        for (const rawMsg of messages) {
+            try { await processMessage(rawMsg); }
+            catch (err) { console.error('[MSG]', err.message); }
+        }
     });
 }
 
