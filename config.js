@@ -47,7 +47,7 @@ const FEATURES = {
   autoRecordType: lowPowerMode ? false : (process.env.AUTO_RECORD_TYPE  === 'true'),
   autoRead:       lowPowerMode ? false : (process.env.AUTO_READ         === 'true'),
   autoBio:        lowPowerMode ? false : (process.env.AUTO_BIO          !== 'false'),
-  autoSwView:     lowPowerMode ? false : (process.env.AUTO_SW_VIEW      !== 'false'),
+  autoSwView:     lowPowerMode ? false : (process.env.AUTO_SW_VIEW      === 'true'),
   welcome:        process.env.WELCOME        !== 'false',
   autoReact:      lowPowerMode ? false : (process.env.AUTO_REACT        === 'true'),
   autoLikeStatus: lowPowerMode ? false : (process.env.AUTO_LIKE_STATUS  === 'true'),
@@ -124,7 +124,7 @@ try {
 
 // ── 8R. HOT-RELOAD ───────────────────────────
 const _self = require.resolve(__filename);
-fs.watchFile(_self, () => {
+if (process.env.HOT_RELOAD === 'true') fs.watchFile(_self, () => {
   fs.unwatchFile(_self);
   console.log(chalk.redBright(`Config updated: '${__filename}' — reloading`));
   delete require.cache[_self];
