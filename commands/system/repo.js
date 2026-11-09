@@ -68,11 +68,11 @@ module.exports = {
                 ],
                 [
                     `🎬 ${sc('deployment guide')}`,
-                    'https://youtu.be/4PQcn-qqrcE',
+                    'https://youtu.be/kWC7UYiLh30',
                 ],
                 [
                     `📢 ${sc('whatsapp channel')}`,
-                    config.whatsappchannel,
+                    config.whatsappchannel || 'https://whatsapp.com/channel/0029VbE0dNM0rGiHzZ5KEY2i',
                 ],
                 [
                     `💬 ${sc('support group')}`,
