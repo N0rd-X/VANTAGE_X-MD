@@ -1,6 +1,6 @@
 {
   "name": "Vantage_X-MD",
-  "version": "0.1.0-beta",
+  "version": "0.1.1-beta",
   "description": "VANTAGE-X MD — Fast, smart, open-source WhatsApp bot. Maintained by Nord-X.",
   "main": "index.js",
   "type": "commonjs",
