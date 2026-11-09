@@ -1,9 +1,21 @@
 'use strict';
 
+const fs                       = require('fs');
+const path                     = require('path');
 const config                   = require('../../config');
-const { readDb }               = require('../../lib/db');
-const { send }     = require('../../helpers');
+const { send }                 = require('../../helpers');
+const { isOwner, getMode }     = require('../../services/commands');
 const { sc, TOP, MID, BOT, R } = require('../../lib/messageStyle');
+
+const DB_DIR = path.join(__dirname, '../../database');
+
+// Read a JSON file straight from disk (no cache) so the view is never stale
+const readNow = (file, fallback = {}) => {
+    try { return JSON.parse(fs.readFileSync(path.join(DB_DIR, file), 'utf8')); }
+    catch { return fallback; }
+};
+
+const onOff = (v) => (v ? sc('on') : sc('off'));
 
 module.exports = {
     name: 'settings',
@@ -16,30 +28,16 @@ module.exports = {
     async execute(sock, msg, args) {
         const jid = msg.key.remoteJid;
         try {
-            // ── Read live values from settings.json, fall back to globals ─────
-            const db = readDb('settings.json', {});
+            // ── Identity / bot — the live values the bot is running with ──────
+            const prefix    = global.prefix                       || '!';
+            const ownerName = config.ownername  || global.ownername  || sc('not set');
+            const ownerNum  = config.ownernumber || global.ownernumber || '';
+            const mode      = getMode();
 
-            const prefix    = db.prefix      || global.prefix        || config.prefix      || '!';
-            const mode      = db.mode        || process.env.BOT_MODE || 'public';
-            const ownerName = db.ownername   || global.ownername     || config.ownername   || 'Nord-X';
-            const ownerNum  = db.ownernumber || global.ownernumber   || config.ownernumber || '';
+            const ownerAfk  = Object.keys(readNow('afk.json')).some(k => isOwner(k));
 
-            // ── Feature flags — read from db first, then global, then false ───
-            const flag = (dbKey, globalKey) => {
-                const val = db[dbKey] ?? global[globalKey] ?? false;
-                return val ? sc('on') : sc('off');
-            };
-
-            const autoReply      = flag('autoReply',     'autoReply');
-            const autoRead       = flag('autoRead',      'autoread');
-            const autoRecording  = flag('autoRecording', 'autoRecording');
-            const autoLikeStatus = flag('autoLikeStatus','autolikestatus');
-            const alwaysOnline   = flag('alwaysOnline',  'alwaysonline');
-            const afk            = flag('afk',           'afk');
-
-            const maskedNum = ownerNum
-                ? '•'.repeat(Math.max(0, ownerNum.length - 4)) + ownerNum.slice(-4)
-                : sc('not set');
+            // ── Automation ─────────────────────────────────────────────────────
+            const autoReply = !!readNow('autoreply.json').enabled;
 
             const text = [
                 TOP,
@@ -48,19 +46,23 @@ module.exports = {
                 R,
                 `${R} 👤 ${sc('owner')}`,
                 `${R} ├─ ${sc('name')}    › ${sc(ownerName)}`,
-                `${R} └─ ${sc('number')}  › ${maskedNum}`,
+                `${R} └─ ${sc('number')}  › ${ownerNum || sc('not set')}`,
                 R,
                 `${R} ⚙️ ${sc('bot')}`,
                 `${R} ├─ ${sc('prefix')}  › ${prefix}`,
                 `${R} ├─ ${sc('mode')}    › ${sc(mode)}`,
-                `${R} └─ ${sc('afk')}     › ${afk}`,
+                `${R} └─ ${sc('afk')}     › ${onOff(ownerAfk)}`,
                 R,
                 `${R} 📡 ${sc('automation')}`,
-                `${R} ├─ ${sc('autoreply')}      › ${autoReply}`,
-                `${R} ├─ ${sc('autoread')}       › ${autoRead}`,
-                `${R} ├─ ${sc('autorecording')}  › ${autoRecording}`,
-                `${R} ├─ ${sc('autolikestatus')} › ${autoLikeStatus}`,
-                `${R} └─ ${sc('alwaysonline')}   › ${alwaysOnline}`,
+                `${R} ├─ ${sc('autoreply')}      › ${onOff(autoReply)}`,
+                `${R} ├─ ${sc('autoread')}       › ${onOff(global.autoread)}`,
+                `${R} ├─ ${sc('autotyping')}     › ${onOff(global.autoTyping)}`,
+                `${R} ├─ ${sc('autorecording')}  › ${onOff(global.autoRecording)}`,
+                `${R} ├─ ${sc('autoreact')}      › ${onOff(global.autoreact)}`,
+                `${R} ├─ ${sc('autolikestatus')} › ${onOff(global.autolikestatus)}`,
+                `${R} ├─ ${sc('alwaysonline')}   › ${onOff(global.alwaysonline)}`,
+                `${R} ├─ ${sc('autoviewstatus')} › ${onOff(global.autoswview)}`,
+                `${R} └─ ${sc('autobio')}        › ${onOff(global.autobio)}`,
                 R,
                 BOT,
                 '',

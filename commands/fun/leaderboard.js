@@ -1,3 +1,5 @@
+'use strict';
+
 const config = require('../../config');
 const fs = require('fs');
 const path = require('path');
@@ -13,7 +15,7 @@ function saveDB(data) {
 
 module.exports = {
     name: 'leaderboard',
-    aliases: ['lb', 'top'],
+    aliases: ['lb'],
     category: 'fun',
     description: 'Show group leaderboard',
     usage: `${config.prefix}leaderboard`,

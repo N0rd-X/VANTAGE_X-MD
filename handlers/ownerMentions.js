@@ -2,7 +2,7 @@
 
 const config = require('../config');
 
-async function handleOwnerProtection(sock, msg) {
+async function handleOwnerMentions(sock, msg) {
     try {
         const jid    = msg.key.remoteJid;
         const sender = msg.key.participant || msg.key.remoteJid;
@@ -32,7 +32,7 @@ async function handleOwnerProtection(sock, msg) {
             },
         });
 
-        console.log(`[OWNER PROTECTION] ${senderName} tagged owner in ${jid}`);
+        console.log(`[OWNER MENTION] ${senderName} tagged owner in ${jid}`);
         return true;
     } catch (err) {
         console.error('[ownerMentions]', err.message);
@@ -40,4 +40,4 @@ async function handleOwnerProtection(sock, msg) {
     }
 }
 
-module.exports = { handleOwnerProtection };
+module.exports = { handleOwnerMentions };

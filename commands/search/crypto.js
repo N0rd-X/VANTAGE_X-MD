@@ -1,9 +1,11 @@
+'use strict';
+
 const config = require('../../config');
 const axios = require('axios');
 
 module.exports = {
     name: 'crypto',
-    aliases: ['coin', 'price'],
+    aliases: ['coinprice', 'cryptoprice', 'price'],
     category: 'search',
     description: 'Get crypto price',
     weight: 'heavy',

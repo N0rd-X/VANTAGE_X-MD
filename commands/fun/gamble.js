@@ -1,3 +1,5 @@
+'use strict';
+
 const config = require('../../config');
 const fs = require('fs');
 const path = require('path');
@@ -7,7 +9,7 @@ const save = (d) => fs.writeFileSync(DB_PATH, JSON.stringify(d, null, 2));
 
 module.exports = {
     name: 'gamble',
-    aliases: ['bet', 'roll'],
+    aliases: ['bet'],
     category: 'fun',
     description: 'Gamble your money',
     usage: `${config.prefix}gamble <amount>`,

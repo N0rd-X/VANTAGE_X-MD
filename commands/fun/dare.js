@@ -1,3 +1,5 @@
+'use strict';
+
 const config = require('../../config');
 
 const dares = [
@@ -15,7 +17,7 @@ const dares = [
 
 module.exports = {
     name: 'dare',
-    aliases: ['d'],
+    aliases: [],
     category: 'fun',
     description: 'Get a dare',
     usage: `${config.prefix}dare`,

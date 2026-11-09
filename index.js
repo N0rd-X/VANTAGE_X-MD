@@ -19,6 +19,9 @@ const fs        = require('fs');
 const path      = require('path');
 const express   = require('express');
 const NodeCache = require('node-cache');
+const axios     = require('axios');
+
+axios.defaults.timeout = 30_000;
 
 const config      = require('./config');
 const Vantage_XMenu = require('./menu');
@@ -97,14 +100,20 @@ const cmdRef = { commands: loadCommands() };
 global.commands = cmdRef.commands;
 console.log(chalk.green(`📦 Loaded ${cmdRef.commands.size} command entries`));
 
-fs.watch(path.join(__dirname, 'commands'), { recursive: true }, () => {
-    for (const key of Object.keys(require.cache)) {
-        if (key.includes(`${path.sep}commands${path.sep}`)) delete require.cache[key];
-    }
-    cmdRef.commands  = loadCommands();
-    global.commands  = cmdRef.commands;
-    console.log(chalk.yellow(`🔄 Commands reloaded (${cmdRef.commands.size} entries)`));
-});
+if (process.env.HOT_RELOAD === 'true') {
+    let reloadTimer = null;
+    fs.watch(path.join(__dirname, 'commands'), { recursive: true }, () => {
+        clearTimeout(reloadTimer);                 // debounce: editors fire several events per save
+        reloadTimer = setTimeout(() => {
+            for (const key of Object.keys(require.cache)) {
+                if (key.includes(`${path.sep}commands${path.sep}`)) delete require.cache[key];
+            }
+            cmdRef.commands  = loadCommands();
+            global.commands  = cmdRef.commands;
+            console.log(chalk.yellow(`🔄 Commands reloaded (${cmdRef.commands.size} entries)`));
+        }, 300);
+    });
+}
 
 // ── Process-level guards ─────────────────────────────────────────────────────
 // Without these, one stray throw in a timer/event callback kills the whole bot.
@@ -130,6 +139,7 @@ process.on('unhandledRejection', (reason) => {
 // NodeCache timers on every reconnect.
 const msgRetry       = new NodeCache({ stdTTL: 60, useClones: false });
 const signalKeyCache = new NodeCache({ stdTTL: 5 * 60, useClones: false });
+const groupCache     = new NodeCache({ stdTTL: 5 * 60, useClones: false });
 
 const AUTOBIO_MINUTES = Math.max(parseInt(process.env.AUTOBIO_INTERVAL_MIN, 10) || 30, 5);
 
@@ -185,6 +195,7 @@ async function startBot() {
             generateHighQualityLinkPreview: true,
             syncFullHistory:                false,
             msgRetryCounterCache:           msgRetry,
+            cachedGroupMetadata:            async (jid) => groupCache.get(jid),
             defaultQueryTimeoutMs:          60_000,
         });
         currentSock = sock;
@@ -204,6 +215,12 @@ async function startBot() {
             sock.sendMessage(jid, { react: { text: emoji, key } });
 
         sock.ev.on('creds.update', saveCreds);
+        sock.ev.on('groups.update', async ([ev]) => {
+            try { if (ev?.id) groupCache.set(ev.id, await sock.groupMetadata(ev.id)); } catch { /* ignore */ }
+        });
+        sock.ev.on('group-participants.update', async (ev) => {
+            try { groupCache.set(ev.id, await sock.groupMetadata(ev.id)); } catch { /* ignore */ }
+        });
 
         // Connection updates
         sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
@@ -278,13 +295,15 @@ async function startBot() {
     }
 }
 
-// Hot-reload self (registered once — it used to be re-registered on every reconnect)
-const selfPath = require.resolve(__filename);
-fs.watchFile(selfPath, { interval: 2000 }, () => {
-    fs.unwatchFile(selfPath);
-    console.log(chalk.yellow('🔄 index.js changed — restarting…'));
-    process.exit(0);
-});
+// Hot-reload self, registered once.
+if (process.env.HOT_RELOAD === 'true') {
+    const selfPath = require.resolve(__filename);
+    fs.watchFile(selfPath, { interval: 2000 }, () => {
+        fs.unwatchFile(selfPath);
+        console.log(chalk.yellow('🔄 index.js changed — restarting…'));
+        process.exit(0);
+    });
+}
 
 // Entry point
 startBot().catch(err => {

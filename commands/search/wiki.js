@@ -1,9 +1,11 @@
+'use strict';
+
 const config = require('../../config');
 const axios = require('axios');
 
 module.exports = {
     name: 'wiki',
-    aliases: ['wikipedia', 'define'],
+    aliases: ['wikipedia'],
     category: 'search',
     description: 'Search Wikipedia for any topic',
     usage: `${config.prefix}wiki <topic>`,

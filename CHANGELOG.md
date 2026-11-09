@@ -3,13 +3,44 @@
 All notable changes to **VANTAGE-X MD** are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.1-beta] — 10-11-2026
+
+### Added
+- Group metadata cached (5 min) via `cachedGroupMetadata`, refreshed on group and participant updates. Reduces rate-limit risk.
+- `lib/media.js` a shared converter helper for converter commands.
+- Global axios timeouts
+
+### Fixed
+- `tomp3` and `togif` now delete their "working…" message
+- `nightcore`, `emix`, `toimg`: syntax error (missing comma after `weight: 'heavy'`) stopped these commands from loading.
+- Resolved duplicate aliases from search, fun and download commands.
+- `lib/converter.js` now requires `ffmpeg-static` instead of `@ffmpeg-installer/ffmpeg`.
+- Message handler only processed `messages[0]`, dropping the rest of a batch. It now handles every message, with a try/catch per message.
+
+### Changed
+- `readDb` caches "file missing" for its TTL instead of hitting the disk on every message.
+- Raised the converter input limit to 150 MB.
+- `write` text now goes into a temp file and ffmpeg is launched with `execFile` (no shell), for security.
+- Converter commands now use `lib/converter.js`
+- `write` auto-detects a system font because ffmpeg-static often has no fontconfig
+- audio effects pass `-vn`, so quoting a video no longer breaks them
+- Status broadcasts skip moderation and command parsing (they have their own listeners).
+- Updated `repo.js` with the relevant links.
+
+### Removed
+- Removed 32 high-severity dependency advisories.
+
+---
+
 ## [0.1.0-beta] — 28-09-2026
 
 ### Added
 - `repo` command for bot repository details
 
 ### Removed
-- Removed ownerGuard from all auto-commands
+- Removed ownerGuard for owner permission checks
+
+---
 
 ## [0.0.3-alpha] — 20-09-2026
 

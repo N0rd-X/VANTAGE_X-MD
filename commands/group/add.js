@@ -1,8 +1,10 @@
+'use strict';
+
 const config = require('../../config');
 
 module.exports = {
     name: 'add',
-    aliases: ['invite'],
+    aliases: [],
     category: 'group',
     description: 'Add a member to the group',
     usage: `${config.prefix}add <number>`,
