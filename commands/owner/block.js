@@ -1,11 +1,11 @@
 'use strict';
 
-const config = require('../../config');
+const config        = require('../../config');
 const { getTarget } = require('../../helpers');
 
 module.exports = {
     name: 'block',
-    aliases: ['ban', 'banuser'],
+    aliases: ['banuser'],
     category: 'owner',
     description: 'Block a user',
     usage: `${config.prefix}block @user`,
