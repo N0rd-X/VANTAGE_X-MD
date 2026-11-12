@@ -1,9 +1,5 @@
 'use strict';
 
-/**
- * Link-deletion enforcement
- */
-
 const { getGroupContext } = require('../helpers');
 
 let antilinkCmd;
@@ -21,7 +17,7 @@ async function check(sock, jid, sender, body, key, ownerFlag) {
     if (!antilinkCmd.isEnabled(jid)) return false;
 
     try {
-        const ctx = await getGroupContext(sock, { key: { remoteJid: jid, participant: sender } });
+        const ctx = await getGroupContext(sock, { key: { ...key, remoteJid: jid } });
         if (ctx?.senderIsAdmin) return false; // admins exempt
 
         await sock.sendMessage(jid, { delete: key });
