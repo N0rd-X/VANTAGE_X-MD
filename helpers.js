@@ -3,7 +3,7 @@
 const fs     = require('fs');
 const path   = require('path');
 const config = require('./config');
-const { jidDecode, jidNormalizedUser, proto, getContentType } = require('@whiskeysockets/baileys');
+const { jidDecode, jidNormalizedUser, proto, getContentType, normalizeMessageContent } = require('@whiskeysockets/baileys');
 
 const DB_DIR = path.join(__dirname, 'database');
 
@@ -20,25 +20,103 @@ function _decodeJid(jid) {
 
 // ─── Group utilities ──────────────────────────────────────────────────────────
 
+// WhatsApp identifies the same person in several ways: a phone JID, a LID, each with a ":device" suffix.
+// Everything below compares identities as *sets* of bare JIDs, so a phone-JID sender still matches a LID participant.
+
+const _bare = (jid) => {
+    if (typeof jid !== 'string' || !jid.includes('@')) return null;
+    const [user, server] = jid.toLowerCase().split('@');
+    return `${user.split(':')[0]}@${server === 'c.us' ? 's.whatsapp.net' : server}`;
+};
+const _idSet  = (...ids) => new Set(ids.flat().map(_bare).filter(Boolean));
+const _shares = (a, b) => { for (const x of a) if (b.has(x)) return true; return false; };
+
+// Build the authorisation context for a message sent in a group.
 async function getGroupContext(sock, msg) {
-    const jid = msg.key.remoteJid;
-    if (!jid.endsWith('@g.us')) return null;
+    const key = msg.key;
+    const jid = key.remoteJid;
+    if (!jid || !jid.endsWith('@g.us')) return null;
 
     const meta   = await sock.groupMetadata(jid);
-    const sender = msg.key.participant || msg.key.remoteJid;
-    const botId  = sock.user.id.replace(/:\d+/, '') + '@s.whatsapp.net';
-    const find   = (id) => meta.participants.find(p => p.id === id);
+    const fromMe = !!key.fromMe;
+
+    const botIds    = _idSet(sock.user?.id, sock.user?.lid);
+    const senderIds = fromMe
+        ? botIds
+        : _idSet(key.participant, key.participantPn, key.participantLid, key.senderPn, key.senderLid);
+
+    const entryIds = (p) => _idSet(p?.id, p?.jid, p?.lid, p?.phoneNumber);
+    const findBy   = (ids) => meta.participants.find(p => _shares(entryIds(p), ids)) || null;
+    const expand   = (id) => new Set([..._idSet(id), ...entryIds(findBy(_idSet(id)))]);
+
+    const senderEntry = findBy(senderIds);
+    const botEntry    = findBy(botIds);
+
+    // Lazy require: services/commands pulls in config + db, keep helpers import-cycle free.
+    const { isOwner } = require('./services/commands');
+    const ownerCheck  = (ids) => isOwner([...ids]);
+
+    const senderIsOwner = fromMe || ownerCheck(new Set([...senderIds, ...entryIds(senderEntry)]));
+    const isBot         = (id) => _shares(expand(id), botIds);
+    const isOwnerJid    = (id) => ownerCheck(expand(id));
 
     return {
         jid,
         meta,
-        sender,
-        botId,
-        senderIsAdmin: !!find(sender)?.admin,
-        botIsAdmin:    !!find(botId)?.admin,
-        participants:  meta.participants.map(p => p.id),
+        sender: key.participant || key.participantPn || (fromMe ? _bare(sock.user?.id) : jid),
+        botId:  _bare(sock.user?.id),
+        participants: meta.participants.map(p => p.id),
+
+        senderIsOwner,
+        senderIsAdmin: !!senderEntry?.admin || senderIsOwner,
+        botIsAdmin:    !!botEntry?.admin,
+
+        participantFor: (id) => findBy(_idSet(id)),
+        isBot,
+        isOwnerJid,
+
+        // { ok:true } or { ok:false, reason:'bot'|'owner' } — the owner may do anything to anyone
+        // except the bot itself; everybody else may not act against the bot or the owner.
+        canTarget(id) {
+            if (isBot(id)) return { ok: false, reason: 'bot' };
+            if (!senderIsOwner && isOwnerJid(id)) return { ok: false, reason: 'owner' };
+            return { ok: true };
+        },
     };
 }
+
+// Gate for group commands.
+async function requireGroup(sock, msg, { admin = false, botAdmin = false } = {}) {
+    const jid   = msg.key.remoteJid;
+    const reply = (text) => sock.sendMessage(jid, { text }).catch(() => {});
+
+    if (!jid || !jid.endsWith('@g.us')) { await reply(global.mess.group); return null; }
+
+    const ctx = await getGroupContext(sock, msg);
+    if (admin    && !ctx.senderIsAdmin) { await reply(global.mess.admin);    return null; }
+    if (botAdmin && !ctx.botIsAdmin)    { await reply(global.mess.botAdmin); return null; }
+    return ctx;
+}
+
+// Raw text exactly as typed. This keeps newlines and repeated spaces, which matters for multi-line messages.
+function rawArgs(msg) {
+    const c    = normalizeMessageContent(msg.message) || {};
+    const text = c.conversation || c.extendedTextMessage?.text || c.imageMessage?.caption || c.videoMessage?.caption || '';
+    return text.replace(/^\s*\S+/, '').trim();
+}
+
+// Raw target JID from a mention, else from a phone number argument. null when neither is present.
+function pickTarget(msg, args) {
+    const mentioned = msg.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
+    if (mentioned) return mentioned;
+    const digits = String(args?.[0] || '').replace(/\D/g, '');
+    return digits ? `${digits}@s.whatsapp.net` : null;
+}
+
+const DENY_TARGET = {
+    bot:   "❌ I can't target myself.",
+    owner: "⛔ I'm not allowed to target my owner.",
+};
 
 function getTarget(msg, args) {
     const ctx = msg.message?.extendedTextMessage?.contextInfo;
@@ -122,12 +200,6 @@ function getCleanParticipantId(conn, m) {
     return jid;
 }
 
-/**
- * Attach convenience properties to a raw Baileys message object.
- * @param {object} conn  - Baileys socket
- * @param {object} m     - Raw message from messages.upsert
- * @returns {object}     The same message, mutated with helper fields
- */
 function smsg(conn, m) {
     if (!m) return m;
     const M = proto.WebMessageInfo;
@@ -206,6 +278,6 @@ function smsg(conn, m) {
 }
 
 module.exports = {
-    getGroupContext, getTarget, send, makeDB,
+    getGroupContext, requireGroup, pickTarget, rawArgs, DENY_TARGET, getTarget, send, makeDB,
     getQuotedImage, getQuotedMedia, tooLarge, smsg,
 };
