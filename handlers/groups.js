@@ -1,24 +1,18 @@
 'use strict';
 
-/**
- * Handles group participant events: welcome and goodbye messages.
- */
+const config   = require('../config');
+const settings = require('../services/groupsettings');
 
-const { readDb } = require('../lib/db');
-const config     = require('../config');
+const KIND_FOR_ACTION = { add: 'welcome', remove: 'goodbye' };
 
-/**
- * Attach the group-participants.update handler to the socket.
- *
- * @param {object} sock - Baileys socket
- */
+// Attach the group-participants.update handler to the socket.
 function attach(sock) {
     sock.ev.on('group-participants.update', async ({ id, participants, action }) => {
         if (!global.welcome) return;
 
-        const groupDb = readDb('welcome.json', {});
-        const cfg     = groupDb[id];
-        if (!cfg?.enabled) return;
+        // Cheap exits first: promotions/demotions, and groups where this event is switched off
+        const kind = KIND_FOR_ACTION[action];
+        if (!kind || !settings.isOn(id, kind)) return;
 
         let meta;
         try {
@@ -28,42 +22,30 @@ function attach(sock) {
             return;
         }
 
-        const groupName  = meta.subject || 'this group';
-        const desc       = meta.desc    || '';
-        const ppFallback = config.vantagexpp;
-
+        const tpl         = settings.template(id, kind);
+        const details     = { group: meta.subject || 'this group', desc: meta.desc || '', count: meta.participants.length };
         const contextInfo = { forwardingScore: 2000, isForwarded: true };
 
-        for (const participant of participants) {
-            const num = participant.split('@')[0];
+        for (const p of participants) {
+            const participant = typeof p === 'string' ? p : p?.id;      // newer Baileys sends objects
+            if (!participant) continue;
+
+            const text = settings.render(tpl, { ...details, num: participant.split('@')[0] });
 
             let ppUrl;
             try {
                 ppUrl = await sock.profilePictureUrl(participant, 'image');
             } catch {
-                ppUrl = ppFallback;
+                ppUrl = config.vantagexpp;
             }
 
-            const isAdd    = action === 'add';
-            const isRemove = action === 'remove';
-
-            if (!isAdd && !isRemove) continue;
-
-            const template = isAdd
-                ? (cfg.welcomeMsg || `Welcome @${num} to *${groupName}*! 🎉\n\n${desc}`)
-                : (cfg.goodbyeMsg || `Goodbye @${num}, we'll miss you! 👋`);
-
-            const text = template
-                .replace(/@user/gi,  `@${num}`)
-                .replace(/@group/gi, groupName);
-
             await sock.sendMessage(id, {
-                image:       { url: ppUrl },
-                caption:     text,
-                mentions:    [participant],
+                image:    { url: ppUrl },
+                caption:  text,
+                mentions: [participant],
                 contextInfo,
             }).catch(() =>
-                // Fallback to text-only if profile picture fails
+                // Fallback to text-only if the picture can't be sent
                 sock.sendMessage(id, { text, mentions: [participant] })
                     .catch(err => console.error('[GROUPS] Send failed:', err.message))
             );

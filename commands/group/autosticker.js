@@ -1,9 +1,12 @@
-const config = require('../../config');
-const fs = require('fs');
-const path = require('path');
-const DB_PATH = path.join(__dirname, '../../database/autosticker.json');
-const load = () => { try { return JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); } catch { return {}; } };
-const save = (d) => fs.writeFileSync(DB_PATH, JSON.stringify(d, null, 2));
+'use strict';
+
+const config           = require('../../config');
+const { requireGroup } = require('../../helpers');
+const fs               = require('fs');
+const path             = require('path');
+const DB_PATH          = path.join(__dirname, '../../database/autosticker.json');
+const load             = () => { try { return JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); } catch { return {}; } };
+const save             = (d) => fs.writeFileSync(DB_PATH, JSON.stringify(d, null, 2));
 
 module.exports = {
     name: 'autosticker',
@@ -15,10 +18,8 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            if (!jid.endsWith('@g.us')) return await sock.sendMessage(jid, { text: global.mess.group });
-            const groupMeta = await sock.groupMetadata(jid);
-            const sender = msg.key.participant || msg.key.remoteJid;
-            if (!groupMeta.participants.find(p => p.id === sender)?.admin) return await sock.sendMessage(jid, { text: global.mess.admin });
+            const ctx = await requireGroup(sock, msg, { admin: true });
+            if (!ctx) return;
             const action = args[0]?.toLowerCase();
             const db = load();
             if (action === 'on') { db[jid] = true; save(db); return await sock.sendMessage(jid, { text: '🎨 Auto-sticker enabled.' }); }

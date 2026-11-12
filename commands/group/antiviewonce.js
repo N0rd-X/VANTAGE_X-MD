@@ -1,6 +1,9 @@
-const config = require('../../config');
-const fs = require('fs');
-const path = require('path');
+'use strict';
+
+const config           = require('../../config');
+const { requireGroup } = require('../../helpers');
+const fs               = require('fs');
+const path             = require('path');
 
 const DB_PATH = path.join(__dirname, '../../database/antiviewonce.json');
 
@@ -21,17 +24,8 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            if (!jid.endsWith('@g.us')) return await sock.sendMessage(jid, { text: global.mess.group });
-            
-            const groupMeta = await sock.groupMetadata(jid);
-            const sender = msg.key.participant || msg.key.remoteJid;
-            const botId = sock.user.id.replace(/:\d+/, '') + '@s.whatsapp.net';
-            
-            const senderIsAdmin = groupMeta.participants.find(p => p.id === sender)?.admin;
-            const botIsAdmin = groupMeta.participants.find(p => p.id === botId)?.admin;
-            
-            if (!senderIsAdmin) return await sock.sendMessage(jid, { text: global.mess.admin });
-            if (!botIsAdmin) return await sock.sendMessage(jid, { text: global.mess.botAdmin });
+            const ctx = await requireGroup(sock, msg, { admin: true, botAdmin: true });
+            if (!ctx) return;
             
             const action = args[0]?.toLowerCase();
             const db = loadDB();

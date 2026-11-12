@@ -1,5 +1,7 @@
+'use strict';
+
 const config = require('../../config');
-const { isAdmin } = require('../../lib/isAdmin');
+const { requireGroup, pickTarget, DENY_TARGET } = require('../../helpers');
 
 module.exports = {
     name: 'demote',
@@ -12,33 +14,21 @@ module.exports = {
         try {
             const jid = msg.key.remoteJid;
 
-            if (!jid.endsWith('@g.us')) {
-                return await sock.sendMessage(jid, { text: global.mess.group });
-            }
+            const ctx = await requireGroup(sock, msg, { admin: true, botAdmin: true });
+            if (!ctx) return;
+            const { meta: groupMeta } = ctx;
 
-            const groupMeta = await sock.groupMetadata(jid);
-            const sender = msg.key.participant || msg.key.remoteJid;
-            const botId = sock.user.id.replace(/:\d+/, '') + '@s.whatsapp.net';
-
-            const senderIsAdmin = groupMeta.participants.find(p => p.id === sender)?.admin;
-            const botIsAdmin = groupMeta.participants.find(p => p.id === botId)?.admin;
-
-            if (!senderIsAdmin) {
-                return await sock.sendMessage(jid, { text: global.mess.admin });
-            }
-
-            if (!botIsAdmin) {
-                return await sock.sendMessage(jid, { text: global.mess.botAdmin });
-            }
-
-            const mentioned = msg.message?.extendedTextMessage?.contextInfo?.mentionedJid;
-            const target = mentioned?.[0] || (args[0]?.replace(/[^0-9]/g, '') + '@s.whatsapp.net');
-
-            if (!target || target === botId) {
+            const rawTarget = pickTarget(msg, args);
+            const entry     = rawTarget && ctx.participantFor(rawTarget);
+            if (!entry) {
                 return await sock.sendMessage(jid, {
-                    text: `❌ Usage: ${this.usage}\nMention the member you want to demote.`
+                    text: rawTarget ? '❌ That user is not in this group.' : `❌ Usage: ${this.usage}\nMention the member you want to demote.`
                 });
             }
+            const target = entry.id;
+
+            const guard = ctx.canTarget(target);
+            if (!guard.ok) return await sock.sendMessage(jid, { text: DENY_TARGET[guard.reason] });
 
             const targetParticipant = groupMeta.participants.find(p => p.id === target);
             if (!targetParticipant) {

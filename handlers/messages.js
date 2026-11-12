@@ -5,6 +5,7 @@ const { readDb } = require('../lib/db');
 const { isOwner, learnOwnerLid, getMode, modeAllows, run: runCommand } = require('../services/commands');
 const chatbot     = require('../services/chatbot');
 const antilink    = require('../services/antilink');
+const antinsfw    = require('../services/antinsfw');
 const auto        = require('./auto');
 const { handleOwnerMentions } = require('./ownerMentions');
 const VantageMenu = require('../menu');
@@ -93,6 +94,12 @@ function attach(sock, cmdRef) {
             const blocked = await antilink.check(sock, jid, sender, body, m.key, ownerFlag);
             if (blocked) return;
 
+            // NSFW image scan. Only awaited when the same message is also a command.
+            // Otherwise it runs in the background so a slow moderation API never holds up the rest of the batch.
+            const nsfwScan = antinsfw.check(sock, rawMsg, { jid, ownerFlag })
+                .catch(err => { console.error('[antinsfw]', err.message); return false; });
+            if (isCmd && await nsfwScan) return;
+
             // Profanity filter
             const _abw = cmdRef.commands.get('antibadword');
             if (!isCmd && _abw?.check?.(jid, body)) {
@@ -153,8 +160,6 @@ function attach(sock, cmdRef) {
             console.log(`[DEBUG] upsert type=${type} count=${messages.length}`);
         }
         if (type !== 'notify') return;
-
-        // Previously only messages[0] was handled, silently dropping the rest of a batch.
         for (const rawMsg of messages) {
             try { await processMessage(rawMsg); }
             catch (err) { console.error('[MSG]', err.message); }

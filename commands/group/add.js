@@ -1,6 +1,7 @@
 'use strict';
 
-const config = require('../../config');
+const config           = require('../../config');
+const { requireGroup } = require('../../helpers');
 
 module.exports = {
     name: 'add',
@@ -12,19 +13,8 @@ module.exports = {
     async execute(sock, msg, args) {
         try {
             const jid = msg.key.remoteJid;
-            if (!jid.endsWith('@g.us')) {
-                return await sock.sendMessage(jid, { text: global.mess.group });
-            }
-            
-            const groupMeta = await sock.groupMetadata(jid);
-            const sender = msg.key.participant || msg.key.remoteJid;
-            const botId = sock.user.id.replace(/:\d+/, '') + '@s.whatsapp.net';
-            
-            const senderIsAdmin = groupMeta.participants.find(p => p.id === sender)?.admin;
-            const botIsAdmin = groupMeta.participants.find(p => p.id === botId)?.admin;
-            
-            if (!senderIsAdmin) return await sock.sendMessage(jid, { text: global.mess.admin });
-            if (!botIsAdmin) return await sock.sendMessage(jid, { text: global.mess.botAdmin });
+            const ctx = await requireGroup(sock, msg, { admin: true, botAdmin: true });
+            if (!ctx) return;
             
             if (!args[0]) {
                 return await sock.sendMessage(jid, { text: `❌ Usage: ${this.usage}\n\nExample: ${config.prefix}add 1234567890` });
